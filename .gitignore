@@ -30,9 +30,8 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# Databases and data (runtime data ignored; SSE regression fixtures tracked)
-data/*
-!data/debug_upstream_sse/
+# Databases and runtime data (root-level only; scripts/data/ is tracked)
+/data/
 *.db
 *.db-shm
 *.db-wal

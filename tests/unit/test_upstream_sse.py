@@ -1941,41 +1941,52 @@ class TestCreatedDrift:
 
 
 # ---------------------------------------------------------------------------
-# Real GLM-ollama.com regression (ground truth captured via PROXY_CAPTURE_UPSTREAM_SSE)
+# GLM-ollama.com regression (synthetic reproduction of captured quirks;
+# original capture files purged for the open-source release)
 # ---------------------------------------------------------------------------
 
 
 class TestGLMOllamaRealStreamRegression:
-    """Pins the real GLM-ollama.com quirk that crashed the strict parser:
-    `created` increments per chunk (1784841550→…→1784841551 in capture
-    097b7012b1fd; 1784834756→…→1784834759 in capture edd33ab78c1e). Bytes
-    captured from GLM-5.2:cloud at https://ollama.com/v1/chat/completions
-    via PROXY_CAPTURE_UPSTREAM_SSE. Revert-test: restoring the strict
-    `created` equality makes both captures raise 'conflicting_metadata'.
+    """Pins the GLM-ollama.com quirk that crashed the strict parser:
+    `created` increments per chunk. Synthetic bytes reproduce the shape of
+    the original GLM-5.2:cloud captures (https://ollama.com/v1/chat/completions).
+    Revert-test: restoring strict `created` equality makes both streams raise
+    'conflicting_metadata'.
     """
 
     def _glm_text_lines(self):
-        with open("data/debug_upstream_sse/097b7012b1fd-20260723T211911226744.sse", "rb") as f:
-            lines = []
-            for raw in f:
-                line = raw.rstrip(b"\r\n")
-                if line.startswith(b"#"):
-                    continue
-                lines.append(line)
-            return lines
+        return [
+            b'data: {"id":"chatcmpl-259","object":"chat.completion.chunk","created":1784841550,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"role":"assistant","content":"Hi! What"}}]}',
+            b"",
+            b'data: {"id":"chatcmpl-259","object":"chat.completion.chunk","created":1784841551,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"content":" would you like to do next?"}}]}',
+            b"",
+            b'data: {"id":"chatcmpl-259","object":"chat.completion.chunk","created":1784841551,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}',
+            b"",
+            b"data: [DONE]",
+            b"",
+        ]
 
     def _glm_tool_call_lines(self):
-        with open("data/debug_upstream_sse/edd33ab78c1e-20260723T192559105078.sse", "rb") as f:
-            lines = []
-            for raw in f:
-                line = raw.rstrip(b"\r\n")
-                if line.startswith(b"#"):
-                    continue
-                lines.append(line)
-            return lines
+        return [
+            # reasoning_content co-emitted with content in the SAME delta
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834756,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"Reading example.txt to check the","content":"Continuing D2 implementation"}}]}',
+            b"",
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834758,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"reasoning_content":" header before editing."}}]}',
+            b"",
+            # tool call opens
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834759,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"id":"call_dmhoy0fx","type":"function","function":{"name":"read","arguments":""}}]}}]}',
+            b"",
+            # arguments fragmented across two chunks
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834759,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\\"filePath\\":\\"/home/dev/projects/sa"}}]}}]}',
+            b"",
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834759,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"mple-app/example.txt\\",\\"limit\\":10}"}}]}}]}',
+            b"",
+            b'data: {"id":"chatcmpl-240","object":"chat.completion.chunk","created":1784834759,"model":"glm-5.2:cloud","system_fingerprint":"fp_ollama","choices":[{"index":0,"delta":{},"finish_reason":"tool_calls"}]}',
+            b"",
+        ]
 
     def test_glm_text_stream_reconstructs_without_error(self):
-        """Real GLM text stream with per-chunk `created` drift reconstructs cleanly."""
+        """GLM text stream with per-chunk `created` drift reconstructs cleanly."""
         result = reconstruct_openai_sse(self._glm_text_lines())
         # canonical top-level metadata survives
         assert result["id"] == "chatcmpl-259"
@@ -1983,12 +1994,11 @@ class TestGLMOllamaRealStreamRegression:
         assert result["system_fingerprint"] == "fp_ollama"
         # first-seen `created` wins (1784841550), not the terminal value (1784841551)
         assert result["created"] == 1784841550
-        # reconstructed content: "Hi! What would you like to do next?"
         assert result["choices"][0]["message"]["content"] == "Hi! What would you like to do next?"
         assert result["choices"][0]["finish_reason"] == "stop"
 
     def test_glm_tool_call_stream_reconstructs_without_error(self):
-        """Real GLM tool-call stream with per-chunk `created` drift and
+        """GLM tool-call stream with per-chunk `created` drift and
         reasoning+content co-emission reconstructs cleanly.
         """
         result = reconstruct_openai_sse(self._glm_tool_call_lines())
@@ -1998,11 +2008,10 @@ class TestGLMOllamaRealStreamRegression:
         assert result["system_fingerprint"] == "fp_ollama"
         # first-seen `created` wins (1784834756), not the terminal value (1784834759)
         assert result["created"] == 1784834756
-        # reconstructed content (post-reasoning): "Continuing D2 implementation..."
         msg = result["choices"][0]["message"]
         assert msg["content"].startswith("Continuing D2 implementation")
         # reasoning text was emitted alongside content and reconstructed
-        assert "knowledge-editor.js" in msg.get("reasoning_content", "")
+        assert "example.txt" in msg.get("reasoning_content", "")
         # single tool call with read function
         assert result["choices"][0]["finish_reason"] == "tool_calls"
         tool_calls = msg["tool_calls"]
@@ -2011,7 +2020,7 @@ class TestGLMOllamaRealStreamRegression:
         assert tc["id"] == "call_dmhoy0fx"
         assert tc["type"] == "function"
         assert tc["function"]["name"] == "read"
-        # arguments decoded to a JSON object targeting knowledge-editor.js
+        # arguments reassembled across fragments and decoded to a JSON object
         import json as _json
         args = _json.loads(tc["function"]["arguments"])
-        assert args["filePath"].endswith("knowledge-editor.js")
+        assert args["filePath"].endswith("example.txt")
