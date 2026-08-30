@@ -10,13 +10,11 @@ Originally populated by commit cdf040e (Apr 2026) with 7 schemas.
 Emptied by commit 8d838185 (May 2026) when memory tools were disabled.
 The consumer at src/proxy/tool_cache.py:110-118 still iterates this list
 but finds nothing (the loop is currently a no-op). Phase 4 will re-populate
-this with real schemas via the tool action registry (see
-docs/specs/consolidation-research/phase-4-tool-action-registry.md:116-118).
+this with real schemas via the tool action registry.
 
 KEEP THIS EMPTY LIST — do not delete. Deletion contradicts the
-feature-disabled pattern and the Phase 4 spec. See
-docs/specs/consolidation-research/18-phase-3-final.md §4.1 (external
-review confirmed intent to populate later).
+feature-disabled pattern and the Phase 4 plan (external review confirmed
+intent to populate later).
 """
 
 

@@ -5,10 +5,10 @@ Pins the canonical positioning of the main-agent VFS context block
 end-to-end through debug_session + real VFS builder + real V2 context
 pipeline + mock backend.
 
-Authority: docs/specs/main-agent-vfs-cache-safe-tail.md §1 canonical
-ordering and §13 budget contract; USER-STORIES.md US-127.
+Authority: the canonical VFS cache-safe tail ordering and budget contract;
+USER-STORIES.md US-127.
 
-Canonical ordering (spec §1, §16):
+Canonical ordering:
     primary system
     Tier-2 pin, if present
     summaries

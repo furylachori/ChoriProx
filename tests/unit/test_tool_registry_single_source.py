@@ -1,3 +1,6 @@
+from pathlib import Path
+
+REPO_ROOT = str(Path(__file__).resolve().parents[2])
 
 
 def test_no_default_tool_names_literal_in_src():
@@ -7,7 +10,7 @@ def test_no_default_tool_names_literal_in_src():
     import subprocess
     result = subprocess.run(
         ["grep", "-rn", "DEFAULT_TOOL_NAMES", "src/"],
-        capture_output=True, text=True, cwd="/path/to/choriprox"
+        capture_output=True, text=True, cwd=REPO_ROOT
     )
     assert result.stdout.strip() == "", (
         f"DEFAULT_TOOL_NAMES literal still exists in src/. All consumers "
@@ -22,7 +25,7 @@ def test_no_memory_tool_names_literal_in_src():
     import subprocess
     result = subprocess.run(
         ["grep", "-rn", "MEMORY_TOOL_NAMES", "src/"],
-        capture_output=True, text=True, cwd="/path/to/choriprox"
+        capture_output=True, text=True, cwd=REPO_ROOT
     )
     assert result.stdout.strip() == "", (
         f"MEMORY_TOOL_NAMES literal still exists in src/. All consumers "

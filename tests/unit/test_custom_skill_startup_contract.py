@@ -1,8 +1,8 @@
 """Startup-contract tests for the strict-schema custom-skill loader.
 
 These tests verify the integration between `get_default_registry()` (the
-module-level singleton) and the strict-schema custom-skill loader. Per
-spec `docs/specs/custom-skills-remediation.md` §5.1, the singleton:
+module-level singleton) and the strict-schema custom-skill loader. Per the
+startup contract, the singleton:
 
 - is initialized exactly once via `populate_builtins()`;
 - never publishes a partial custom-skill snapshot;

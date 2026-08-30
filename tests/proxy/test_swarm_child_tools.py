@@ -1,7 +1,7 @@
 """Phase 2 Agent 4 — exact child-tool selection tests for custom swarm.
 
-Covers `docs/specs/custom-skill-research-swarms.md` §8 (Tool whitelist
-semantics) + AC 16.4, AC 16.14:
+Covers the tool whitelist semantics and the acceptance criteria for
+swarm child policies:
 
   - Configured empty child policy (frozenset()) = exactly 0 tools;
     parent allowed_tool_names MUST NOT leak.

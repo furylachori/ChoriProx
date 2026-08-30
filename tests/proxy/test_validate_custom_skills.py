@@ -204,7 +204,7 @@ def test_validator_unreadable_dir_returns_2(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Swarm validator tests (spec custom-skill-research-swarms v3)
+# Swarm validator tests
 # ---------------------------------------------------------------------------
 
 

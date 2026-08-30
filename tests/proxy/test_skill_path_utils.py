@@ -1,7 +1,7 @@
 """Tests for proxy.skills.path_utils (read_contained_regular_file + get_skills_dir).
 
-Per ``docs/specs/custom-skills-remediation.md`` §5.4 (Safe file reading):
-descriptor-based safe reads, symlink/TOCTOU/escape/traversal/oversize.
+Safe file reading: descriptor-based safe reads,
+symlink/TOCTOU/escape/traversal/oversize.
 
 These tests use REAL filesystem objects (tmp_path). They do NOT mock the
 read function — every test exercises the production code path end-to-end.

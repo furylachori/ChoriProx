@@ -16,11 +16,23 @@ def test_neo4j_harness_creates_schema(neo4j_test_db):
 @pytest.mark.integration_neo4j
 def test_neo4j_harness_schema_version(neo4j_test_db):
     """Verify the schema version matches the latest migration."""
+    import re
+    from pathlib import Path
+
+    migrations_dir = Path(__file__).resolve().parents[2] / "src" / "memory" / "migrations"
+    versions = [
+        int(m.group(1))
+        for f in migrations_dir.glob("*.py")
+        if (m := re.match(r"^(\d+)_", f.name))
+    ]
+    assert versions, "No numbered migrations found — migrations dir moved?"
+    expected = max(versions)
+
     executor = neo4j_test_db
     rows = executor.execute_read(
         "MATCH (m:_Migration) RETURN max(m.version) AS version"
     )
-    assert rows[0]["version"] == 10  # StripWorkspacePrefix
+    assert rows[0]["version"] == expected
 
 
 @pytest.mark.integration_neo4j

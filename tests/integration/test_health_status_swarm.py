@@ -1,7 +1,6 @@
 """Integration tests for swarm visibility on operator surfaces.
 
-Pins the read-only operator-facing exposure of the swarm fields specified
-in `docs/specs/custom-skill-research-swarms.md` §0.1 / AC 16.15:
+Pins the read-only operator-facing exposure of the swarm fields:
 
   - `GET /health` MUST include `custom_skills.swarm_enabled` (bool) and
     `custom_skills.swarm_capable_skills` (list of names) in its JSON

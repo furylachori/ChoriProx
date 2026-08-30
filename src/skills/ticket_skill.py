@@ -1,8 +1,7 @@
 """Ticket skill — implements Skill protocol for task management via ^^ticket.
 
 Phase 1d: extends NEW `BaseSkill` from `proxy.skills.skill_definition`.
-Provides the 23 `SkillDefinition` fields as class attributes (per
-docs/specs/consolidation-research/14-phase-1d-plan.md §3.5).
+Provides the 23 `SkillDefinition` fields as class attributes.
 """
 from __future__ import annotations
 

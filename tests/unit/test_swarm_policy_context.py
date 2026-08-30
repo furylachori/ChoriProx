@@ -1,13 +1,12 @@
 """Phase 2 Agent 4 — request-local swarm policy installation tests.
 
-Covers `docs/specs/custom-skill-research-swarms.md` §11.3 + AC 16.4, 16.14,
-16.15:
+Covers the acceptance criteria for swarm policy context installation:
 
   - ``ctx.swarm_policy`` is None by default on RequestContext.
   - ContextOptimizeStage writes the immutable SubagentPolicy from the active
     skill after a successful ``apply_mode``.
   - The reference is identity-stable: ``ctx.swarm_policy is skill.subagents``.
-  - Sub-agents (universal no-nesting §14) keep ``swarm_policy = None`` even
+  - Sub-agents (no nesting allowed) keep ``swarm_policy = None`` even
     if the inherited skill has subagents configured.
   - The reset-at-start invariant: a reused RequestContext with stale
     non-None policy ends the request at None for an ordinary MAIN.

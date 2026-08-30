@@ -165,9 +165,10 @@ class TestErrorMapping:
     def test_map_neo4j_error_maps_service_unavailable(self):
         exc = ServiceUnavailable("Connection refused")
         mapped = _map_neo4j_error(exc)
-        # ServiceUnavailable is not a Neo4jError subclass in this neo4j version,
-        # so _map_neo4j_error returns it unmodified.
-        assert mapped is exc
+        # neo4j 6.x: ServiceUnavailable is a DriverError, not a Neo4jError.
+        # It must still map to InfrastructureError so retry / circuit-breaker /
+        # fail-closed handlers (which catch InfrastructureError) engage.
+        assert isinstance(mapped, InfrastructureError)
 
     def test_map_neo4j_error_maps_transient_error(self):
         exc = TransientError("Temporary failure")

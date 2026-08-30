@@ -1,7 +1,7 @@
 """Strict swarm canary primitive tests.
 
-Covers `docs/specs/custom-skill-research-swarms.md` §0.2, §12.1-12.6, §13.1-13.2
-and ACs 16.8 / 16.12 / 16.17:
+Covers the strict swarm canary primitive: error codes, signing, state
+serialization, and the round-trip invariants:
 
   - `SwarmCanaryError` carries a stable code (no secret leakage)
   - `sign_canary_strict` rejects missing secret, zero-sig, malformed tokens

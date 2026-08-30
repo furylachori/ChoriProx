@@ -1,7 +1,6 @@
 """Strict-schema loader for JSON-defined custom skills.
 
-Implements the canonical schema and loader contract defined in
-`docs/specs/custom-skills-remediation.md` §4-§5.
+Implements the canonical schema and loader contract.
 
 Design summary:
 - Atomic, fail-closed: any single file with a validation issue fails the

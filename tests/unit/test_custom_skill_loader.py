@@ -2,16 +2,16 @@
 
 Verifies the loader at `proxy.skills.custom_skill_loader` correctly parses,
 validates, and aggregates issues from JSON files in the configured skills
-directory. Per spec `docs/specs/custom-skills-remediation.md`:
+directory. Coverage:
 
-- Schema §4.1 (required fields, name/trigger/description rules)
-- Schema §4.2 (aliases, ttl_seconds)
-- Schema §4.3 (unknown keys rejected)
-- Schema §4.4 (tool_whitelist: list, non-empty, no unknown names,
-  proxy_ticket/proxy_work/task denied)
-- Schema §4.5 (filename/name/trigger identity, reserved names, cross-file)
-- Schema §4.6 (size and bound limits)
-- Loader §5 (atomic fail-closed)
+- Required fields, name/trigger/description rules
+- Aliases, ttl_seconds
+- Unknown keys rejected
+- tool_whitelist: list, non-empty, no unknown names,
+  proxy_ticket/proxy_work/task denied
+- Filename/name/trigger identity, reserved names, cross-file
+- Size and bound limits
+- Atomic fail-closed loading
 
 These are unit-level tests — direct calls to `load_custom_skills`,
 `parse_custom_skill_file`, `discover_custom_skill_files`, and
@@ -1641,15 +1641,13 @@ def test_alias_nonreserved_still_accepted(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Swarm-capable custom-skill tests (spec custom-skill-research-swarms v3)
+# Swarm-capable custom-skill tests
 #
-# These tests exercise §0.1 (conditional task admission), §4 (startup
-# rejection matrix), §7 (nested schema), and §9 (per-request budget).
+# These tests exercise conditional task admission, the startup rejection
+# matrix, the nested schema, and the per-request budget.
 #
 # Tests that construct a SubagentPolicy or pass `subagents=` to
-# SkillDefinition require Agent 2's data-class + SkillDefinition field.
-# They are listed in this file but the FAILURES are EXPECTED until
-# Agent 2 lands — see test_custom_skill_loader / agent-2-deps.md.
+# SkillDefinition require the data-class + SkillDefinition field.
 # ---------------------------------------------------------------------------
 
 from dataclasses import FrozenInstanceError  # noqa: E402  (used by Section J)

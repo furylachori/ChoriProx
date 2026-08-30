@@ -6,7 +6,7 @@ All separate allowlists were deleted in Tier 3 Phase 3.
 The public catalog API (`get_tool_names`, `get`, `is_proxy_admin_tool`) is
 the single source of truth that the custom-skill loader (Agent 2) uses to
 validate `tool_whitelist` entries. There is no second static list of valid
-tool names — see `docs/specs/custom-skills-remediation.md` §6.
+tool names.
 """
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ class ToolRegistry:
         pattern in `proxy/skill_tools.py` (the registry now exposes
         ``get`` unconditionally). The loader (Agent 2) also calls this
         to validate ``tool_whitelist`` entries: an unknown name is a
-        hard reject (see `docs/specs/custom-skills-remediation.md` §4.4).
+        hard reject.
         """
         return self._tools.get(name)
 
@@ -125,8 +125,7 @@ class ToolRegistry:
         LLM-facing tool list — ``get_default_tools()`` excludes them
         and ``MemoryToolGuard._check_hierarchy`` blocks them at
         execution time. The loader (Agent 2) rejects them in custom
-        JSON ``tool_whitelist`` entries regardless of author intent
-        (spec §4.4).
+        JSON ``tool_whitelist`` entries regardless of author intent.
         """
         return name in _PROXY_ADMIN_TOOLS
 

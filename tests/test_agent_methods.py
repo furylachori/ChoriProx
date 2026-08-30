@@ -1,8 +1,7 @@
 """Tests for Agent skill-mode methods (Batch A - A1).
 
 Phase 3: ``set_ticket_mode`` was removed from ``Agent`` (zero production
-callers — see docs/specs/consolidation-research/18-phase-3-final.md §H1).
-Tests now exercise ``set_active_mode`` with a ticket ``ModeState``
+callers). Tests now exercise ``set_active_mode`` with a ticket ``ModeState``
 directly instead of going through the legacy wrapper.
 """
 import time

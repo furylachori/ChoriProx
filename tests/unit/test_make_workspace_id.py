@@ -99,9 +99,9 @@ class TestAcceptsAlphanumericWithHyphensAndUnderscores:
 class TestLengthHandling:
     """Length-handling tests for the bare-name function.
 
-    The v5 spec (workspace-rework-v5.md §1.4 and §1.1) describes a
-    64-character maximum length for workspace names (matching the canary
-    regex's `_MAX_WORKSPACE_NAME_LENGTH = 64`). `make_workspace_id` now
+    The v5 workspace rework specifies a 64-character maximum length for
+    workspace names (matching the canary regex's
+    `_MAX_WORKSPACE_NAME_LENGTH = 64`). `make_workspace_id` now
     enforces this limit.
     """
 

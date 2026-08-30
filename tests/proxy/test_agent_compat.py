@@ -1,9 +1,9 @@
 """Tests for Agent backward compatibility (Phase B skill system).
 Tests against REAL Agent — not a stub.
 
-Phase 3: ``Agent.set_ticket_mode`` was removed (zero production callers —
-see docs/specs/consolidation-research/18-phase-3-final.md §H1). Tests now
-build a ticket ``ModeState`` and pass it to ``set_active_mode`` directly.
+Phase 3: ``Agent.set_ticket_mode`` was removed (zero production callers).
+Tests now build a ticket ``ModeState`` and pass it to
+``set_active_mode`` directly.
 """
 import pytest
 import time
@@ -98,17 +98,14 @@ class TestModeStateCleanup:
 
 
 class TestPhase3Deletions:
-    """Regression guards for Phase 3 deletions (see
-    docs/specs/consolidation-research/18-phase-3-final.md).
-    """
+    """Regression guards for Phase 3 deletions."""
 
     def test_agent_spawn_method_removed(self):
         """Phase 3: AgentRegistry.spawn() was deleted (zero callers).
 
         Verify the method no longer exists on AgentRegistry. Any future
         re-introduction must be justified and accompanied by a real
-        caller (no shims, no deprecation paths — see the §1 / §2
-        no-shims policy).
+        caller (no shims, no deprecation paths — the no-shims policy).
         """
         from proxy.agent.agent_registry import AgentRegistry
         assert not hasattr(AgentRegistry, "spawn"), (
@@ -133,10 +130,9 @@ class TestPhase3Deletions:
         """Phase 3: MEMORY_TOOL_DEFINITIONS is intentionally empty (disabled).
 
         This is a feature-disabled pattern. Phase 4 will re-populate via
-        the tool action registry (see
-        docs/specs/consolidation-research/phase-4-tool-action-registry.md).
-        The constant is KEPT (not deleted) so existing imports don't
-        break and Phase 4 has a home for the schemas.
+        the tool action registry. The constant is KEPT (not deleted) so
+        existing imports don't break and Phase 4 has a home for the
+        schemas.
         """
         from memory.tools import MEMORY_TOOL_DEFINITIONS
         assert MEMORY_TOOL_DEFINITIONS == [], (

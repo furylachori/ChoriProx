@@ -4,13 +4,10 @@ Centralizes mode logic (ticket, sub-agent, review, adversary) into:
 - `resolve_mode` — picks the operating mode for the request.
 - `apply_mode` — pre-upstream prompt + tool filtering.
 - `classify_turn_response` / `TurnDisposition` — single-source classifier
-  for terminal disposition of one LLM turn (spec §7.4).
+  for terminal disposition of one LLM turn.
 - `finalize_skill_mode` — compare-and-clear the active mode based on
   the disposition (called from PostProcessStage.execute()'s `finally`
-  block per spec §7.5).
-
-See docs/specs/custom-skills-remediation.md §7.4 / §7.5 for the
-post-process split.
+  block).
 """
 
 import enum

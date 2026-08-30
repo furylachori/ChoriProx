@@ -3,12 +3,15 @@ import json
 import sys
 from datetime import datetime
 
-BACKUP_PATH = "/path/to/choriprox/backups/tasks_backup_874_entities.json"
 WORKSPACE_ID = "choriprox"
 
 
 def main():
-    with open(BACKUP_PATH) as f:
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <tasks_backup.json>")
+        return 2
+    backup_path = sys.argv[1]
+    with open(backup_path) as f:
         data = json.load(f)
 
     tasks = [t.get("all_props", {}) for t in data if t.get("uuid")]

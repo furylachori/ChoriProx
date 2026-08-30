@@ -270,12 +270,11 @@ def verify_canary(
 
 
 # ---------------------------------------------------------------------------
-# §0.2, §12.1-12.6, §13.1-13.2 — STRICT SWARM-ONLY CANARY PRIMITIVE
+# STRICT SWARM-ONLY CANARY PRIMITIVE
 # ---------------------------------------------------------------------------
-# This block is the swarm canary path defined by
-# `docs/specs/custom-skill-research-swarms.md` v3. It is additive and
-# isolates from `sign_canary` / `verify_canary` / `parse_canary` so that
-# legacy `^^ticket` / `^^work` behavior remains byte-identical (AC 16.17).
+# This block is the swarm canary path. It is additive and isolates from
+# `sign_canary` / `verify_canary` / `parse_canary` so that legacy
+# `^^ticket` / `^^work` behavior remains byte-identical.
 #
 # Invariants:
 #   - `swarm_missing_secret` fires before any HMAC work when the secret
@@ -302,8 +301,7 @@ _SWARM_NAME_MAX_LEN: int = 64
 class SwarmCanaryError(RuntimeError):
     """Strict swarm-canary construction failure with a stable code.
 
-    Codes (from `docs/specs/custom-skill-research-swarms.md` §13.1 +
-    prompt-required additions):
+    Codes (defined here plus prompt-required additions):
       - ``swarm_missing_secret``        — PROXY_SESSION_SECRET unset/empty.
       - ``swarm_signing_failed``        — token malformed OR HMAC rejected
                                          OR underlying sign_canary raised.
@@ -1189,9 +1187,9 @@ def _resolve_task_canary(
 class _SwarmTransformError(Exception):
     """Internal swarm transform failure (mapped to StageAbort at the call site).
 
-    Carries a stable ``code`` from the runtime ``swarm_*`` namespace
-    (see docs/specs/custom-skill-research-swarms.md §13.1). The caller's
-    job is to translate this into a ``StageAbort((swarm_error(...), status))``.
+    Carries a stable ``code`` from the runtime ``swarm_*`` namespace.
+    The caller's job is to translate this into a
+    ``StageAbort((swarm_error(...), status))``.
     """
 
     def __init__(self, code: str, message: str) -> None:

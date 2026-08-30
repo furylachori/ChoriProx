@@ -17,8 +17,7 @@ from proxy.agent.message_buffer import MessageBuffer
 from proxy.lock_ordering import make_lock
 import logging as _logging
 
-# Phase 3: set_ticket_mode was deleted (zero production callers — see
-# docs/specs/consolidation-research/18-phase-3-final.md §H1). Callers
+# Phase 3: set_ticket_mode was deleted (zero production callers). Callers
 # must use set_active_mode() directly with a ticket ModeState.
 # Type annotations referencing ModeState are strings (from __future__
 # import annotations at line 6) and resolve at type-check time only.
@@ -39,12 +38,12 @@ def _make_threshold_engine():
 def _activate_skill(agent, skill, skill_ctx, ctx=None) -> None:
     """Activate a skill on the agent (Phase B skill system).
 
-    Per spec §7.3 (custom-skills-remediation.md):
+    Activation contract:
       - `on_activate` runs first; its result is validated.
       - Security/policy exceptions (`ValueError`, `PermissionError`) from
         `on_activate` are re-raised so the caller can surface them.
       - Any other exception sets `activation_failed=True` and BLOCKS
-        `agent.set_active_mode(...)`. Pre-spec, the mode was installed
+        `agent.set_active_mode(...)`. Previously, the mode was installed
         even when `on_activate` raised — a fail-open privilege-escalation
         window. The `if not activation_failed:` guard below closes it.
       - A failed `set_active_mode` itself (e.g. lock contention) also

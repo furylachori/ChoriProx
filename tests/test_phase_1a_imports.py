@@ -1,4 +1,4 @@
-"""tests/test_phase_1a_imports.py — regression test for §6 import-site enumeration.
+"""tests/test_phase_1a_imports.py — regression test for import-site enumeration.
 
 After 1a, ordinary ModeState consumers must import from
 `proxy.skills.skill_definition`. Direct imports from `proxy.agent.types`
@@ -13,8 +13,7 @@ import re
 from pathlib import Path
 
 # Historical count of `from proxy.agent.types import ModeState` import sites
-# at the start of Phase 1a (per docs/specs/consolidation-research/
-# 11-phase-1a-plan.md §6). Pinned here so the test fails BOTH if a new
+# at the start of Phase 1a. Pinned here so the test fails BOTH if a new
 # site is added (len(rows) > 0) AND if the documented historical count
 # is wrong (HISTORICAL_IMPORT_SITE_COUNT != 29).
 HISTORICAL_IMPORT_SITE_COUNT = 29
@@ -23,7 +22,7 @@ HISTORICAL_IMPORT_SITE_COUNT = 29
 def test_mode_state_import_site_count_matches_section_6():
     """After 1a: 0 sites remain (all 29 re-pointed; re-export file excluded).
 
-    DEVIATION from plan §5: the plan asserts `len(rows) == 29` (the
+    DEVIATION from the Phase 1a plan: the plan asserts `len(rows) == 29` (the
     pre-re-pointing count). After the 29 sites are re-pointed AND the
     re-export file is excluded by path, the count is 0. This is the
     only sensible regression test — it pins the invariant that no
@@ -51,7 +50,7 @@ def test_mode_state_import_site_count_matches_section_6():
             "tests/proxy/test_2a_foundation.py",
         }:
             continue
-        # Limit to src/ and tests/ to match §6's scope.
+        # Limit to src/ and tests/ to match the enumeration's scope.
         if not (rel_str.startswith("src/") or rel_str.startswith("tests/")):
             continue
         for lineno, line in enumerate(path.read_text().splitlines(), 1):
@@ -70,11 +69,10 @@ def test_mode_state_import_site_count_matches_section_6():
         f"Expected 0 unique files with old import, got {len(unique_files)}. "
         f"Files: {sorted(unique_files)}"
     )
-    # Pin 2: historical count — the documented §6 pre-1a site count.
+    # Pin 2: historical count — the documented pre-1a site count.
     # If this fails, the historical record is wrong and a reviewer
     # should reconcile this constant with the spec.
     assert HISTORICAL_IMPORT_SITE_COUNT == 29, (
-        f"HISTORICAL_IMPORT_SITE_COUNT drift: expected 29 (per "
-        f"docs/specs/consolidation-research/11-phase-1a-plan.md §6), "
-        f"got {HISTORICAL_IMPORT_SITE_COUNT}. Reconcile with the spec."
+        f"HISTORICAL_IMPORT_SITE_COUNT drift: expected 29 (the documented "
+        f"pre-1a site count), got {HISTORICAL_IMPORT_SITE_COUNT}."
     )

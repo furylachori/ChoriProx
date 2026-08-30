@@ -62,6 +62,9 @@ def pytest_configure(config):
     # data-loss class this default exists to prevent.
     os.environ.setdefault("PROXY_NEO4J_BOLT_URL", "bolt://localhost:7688")
     os.environ.setdefault("NEO4J_AUTH", "neo4j:testpassword")
+    # Stub SOTA key so unit tests constructing the SOTA client are hermetic
+    # on fresh clones. Real credentials (if exported) take precedence.
+    os.environ.setdefault("PROXY_SOTA_API_KEY", "sk-stub-test-key")
 
 
 _INFRA_FILES = {

@@ -1,6 +1,6 @@
 """Tests for migration 010: StripWorkspacePrefix.
 
-v5 spec (workspace-rework-v5.md §2.1) replaces compound `session_id:name`
+The v5 workspace rework replaces compound `session_id:name`
 workspace_ids with bare `name` workspace_ids. Migration 010 is responsible
 for the in-place rewrite of existing Task and Bug data, plus a follow-up
 phase that backfills NULL workspace_ids to 'default', re-keys

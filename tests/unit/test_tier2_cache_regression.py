@@ -47,8 +47,7 @@ from tests.fixtures.cache_sim_backend import (
 )
 
 # Historical dc5e9d2 measurement with the identical harness
-# (context_limit=2560). See .scratch_wave_reports/TIER2_CACHE_BASELINE.md
-# for the full methodology. 53.5% is the historical value; we accept any
+# (context_limit=2560). 53.5% is the historical value; we accept any
 # measured value that does not regress more than 3.0pp below it.
 _HISTORICAL_CACHE_READ_PCT = 53.5
 _ALLOWED_REGRESSION_PP = 3.0

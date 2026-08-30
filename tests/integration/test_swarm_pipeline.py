@@ -1,7 +1,7 @@
 """Phase 2 Agent 5 — full Flask pipeline tests for swarm canary injection.
 
-End-to-end coverage for `docs/specs/custom-skill-research-swarms.md` §11 / §13
-through the real Flask client → RequestPipeline → mock upstream loop.
+End-to-end swarm canary-injection coverage through the real Flask client →
+RequestPipeline → mock upstream loop.
 
 Scenarios:
   1. Valid MAIN swarm parent: task emitted → SKILL canary → 200 OK.

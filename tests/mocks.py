@@ -21,10 +21,9 @@
 #   - `Agent.is_skill_mode -> bool` (property)
 # All five signatures match the MockAgent methods below.
 #
-# Phase 3: `Agent.set_ticket_mode` was deleted from the real Agent
-# (zero production callers — see 18-phase-3-final.md §H1). The mock
-# therefore also drops `set_ticket_mode`; tests must use
-# `set_active_mode(ticket_mode_state)` instead.
+# Phase 3: `Agent.set_ticket_mode` was deleted from the real Agent (zero
+# production callers). The mock therefore also drops `set_ticket_mode`;
+# tests must use `set_active_mode(ticket_mode_state)` instead.
 #
 # R1-HIGH-3 fix: `ModeState` is imported at the top of this module so
 # the import is hoisted to module load time. This eliminates a per-call

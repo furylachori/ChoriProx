@@ -16,8 +16,7 @@ This module owns two public functions and one exception:
 The safe-read helper replaces a prior ``resolve_skill_path`` + reopen pattern
 that resolved the path with ``os.path.realpath`` and re-opened by name,
 leaving a TOCTOU window between validation and read. The new helper opens
-the file first and validates only via the open descriptor
-(``specs/custom-skills-remediation.md`` §5.4).
+the file first and validates only via the open descriptor.
 
 Platform notes (macOS/Linux):
 

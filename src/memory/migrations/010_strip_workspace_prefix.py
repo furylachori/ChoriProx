@@ -128,6 +128,5 @@ class StripWorkspacePrefix(Migration):
 
     def down(self, executor):
         # No-op: re-prefixing requires the original session_id mapping which
-        # is not preserved. The user must use the documented rollback runbook
-        # in docs/specs/workspace-rework-v5.md §6.
+        # is not preserved. The user must use the documented rollback runbook.
         pass

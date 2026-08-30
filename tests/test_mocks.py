@@ -4,8 +4,7 @@ These tests pin the contracts that the §5 test suite relies on but
 which the 1a plan did not exercise directly:
 
   1.  (REMOVED in Phase 3) `set_ticket_mode` was deleted from both the
-      real `Agent` and the mock `MockAgent` (zero production callers —
-      see docs/specs/consolidation-research/18-phase-3-final.md §H1).
+      real `Agent` and the mock `MockAgent` (zero production callers).
       Ticket mode is now installed via
       `set_active_mode(ModeState(name="ticket", ...))`.
   2.  (REMOVED in Phase 3) `set_ticket_mode(False)` clearing path is
@@ -58,8 +57,7 @@ def _fresh_mock_agent():
 # ---------------------------------------------------------------------------
 # Test 1 (REMOVED): set_ticket_mode(True) constructs the canonical
 # ticket ModeState. The mock's set_ticket_mode was deleted in Phase 3
-# alongside the real Agent.set_ticket_mode (zero production callers —
-# see docs/specs/consolidation-research/18-phase-3-final.md §H1). The
+# alongside the real Agent.set_ticket_mode (zero production callers). The
 # canonical ticket ModeState is now constructed directly in tests via
 # ModeState(name="ticket", ttl_seconds=300, allowed_tool_names=frozenset({...}))
 # and installed via set_active_mode(). This is exercised by
@@ -309,8 +307,7 @@ def test_mocks_module_raises_import_error_outside_test_mode(
 # ---------------------------------------------------------------------------
 # Test 9 (REMOVED): set_ticket_mode signature matches Agent.set_ticket_mode.
 # Both `MockAgent.set_ticket_mode` and `Agent.set_ticket_mode` were deleted
-# in Phase 3 (zero production callers — see
-# docs/specs/consolidation-research/18-phase-3-final.md §H1). The lock-step
+# in Phase 3 (zero production callers). The lock-step
 # contract is no longer meaningful; ticket mode is installed via
 # `set_active_mode(ModeState(name="ticket", ...))` instead and is covered
 # by test_mock_agent_is_ticket_mode_handles_workspace_mode and

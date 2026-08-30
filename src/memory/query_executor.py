@@ -11,6 +11,7 @@ try:
     from neo4j import GraphDatabase
     from neo4j.exceptions import (
         ClientError,
+        DriverError,
         ServiceUnavailable,
         SessionExpired,
         TransientError,
@@ -18,6 +19,7 @@ try:
 except ImportError:
     GraphDatabase = None
     ClientError = None
+    DriverError = None
     ServiceUnavailable = None
     SessionExpired = None
     TransientError = None
@@ -185,7 +187,11 @@ def get_shared_executor_from_env() -> Optional["QueryExecutor"]:
 
 def _map_neo4j_error(exc: Exception) -> Exception:
     from neo4j.exceptions import Neo4jError
-    if not isinstance(exc, Neo4jError):
+    # neo4j 6.x split driver/connection failures (ServiceUnavailable,
+    # SessionExpired) into a DriverError subtree separate from server-side
+    # Neo4jError — both must map, or infra failures leak unmapped.
+    root_types = (Neo4jError, DriverError) if DriverError is not None else (Neo4jError,)
+    if not isinstance(exc, root_types):
         return exc
     if ServiceUnavailable and isinstance(exc, ServiceUnavailable):
         return InfrastructureError(str(exc))

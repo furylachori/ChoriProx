@@ -558,7 +558,7 @@ The proxy's capture pipeline extracts these blocks and pins them as a
 stable system message so they survive V2 eviction.
 
 For the full specification, see:
-`.scratch_wave_reports/TIER2_SUB_AGENTS_MD_PINNING_SPEC.md`
+`docs/architecture/tier2-sub-agents-md-pinning-spec-v21.md`
 
 ## Size Notes
 
@@ -921,7 +921,7 @@ The proxy's capture pipeline extracts these blocks and pins them as a
 stable system message so they survive V2 eviction.
 
 For the full specification, see:
-`.scratch_wave_reports/TIER2_SUB_AGENTS_MD_PINNING_SPEC.md`
+`docs/architecture/tier2-sub-agents-md-pinning-spec-v21.md`
 
 ## Size Notes
 

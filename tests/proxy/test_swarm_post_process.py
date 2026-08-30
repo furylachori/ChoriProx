@@ -1,7 +1,6 @@
 """Phase 2 Agent 5 — swarm canary injection tests.
 
-Covers docs/specs/custom-skill-research-swarms.md §11.1 / §13 / §14 /
-§15 against the real `PostProcessStage._inject_task_canaries` boundary
+Runs against the real `PostProcessStage._inject_task_canaries` boundary
 and the real `proxy.canary.transform_swarm_task_calls` helper.
 
 Test groups:

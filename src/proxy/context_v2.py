@@ -1410,9 +1410,9 @@ def _finalize_context_result(
     # reserved for genuinely un-trimmable candidates (system + tools +
     # mandatory content alone overflow, or no eligible trim target).
     #
-    # Spec: docs/specs/main-agent-vfs-cache-safe-tail.md §13.5 (added
-    # in this commit). This trim runs AFTER VFS-drop (§13.1 #7/AC-15
-    # honored) and targets MODEL_SAFE_BUDGET, not room for VFS.
+    # Added tail guard for cache-safe VFS tail handling. This trim runs
+    # AFTER VFS-drop is honored and targets MODEL_SAFE_BUDGET, not room
+    # for VFS.
     # Atomic-unit integrity preserved: we truncate one message's string
     # content, never split a user→assistant(tc)→tool→tool unit.
     if tokens_per_char > 0 and total_tokens > model_safe_tokens:
