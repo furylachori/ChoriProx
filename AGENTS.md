@@ -12,7 +12,6 @@ Security → ContextOptimize → Motivator → ProviderCompat → Upstream → P
 
 **Authoritative deep-dives** (when the root doc can't fit it):
 - [docs/_analysis/PIPELINE_MAP.md](./docs/_analysis/PIPELINE_MAP.md) — 76 KB request-flow reference
-- [ARCHITECTURE_BLUEPRINT.md](./.scratch_wave_reports/ARCHITECTURE_BLUEPRINT.md) — module map + contradictions matrix
 - [USER-STORIES.md](./USER-STORIES.md) — US-XXX behavioral contracts
 - [README.md](./README.md) — quick start + features
 - [docs/TEST_PATTERNS.md](./docs/TEST_PATTERNS.md) — test architecture
@@ -40,7 +39,7 @@ You are here. **Load the root for universal invariants; load a sub-AGENTS.md whe
 └── /tests/AGENTS.md                           # test layers, builders, mocks, wipe gate, fixtures
 ```
 
-For the per-section sources, see [AGENTS_ROOT_MAPPING.md](./.scratch_wave_reports/AGENTS_ROOT_MAPPING.md).
+For the per-section sources, see the internal documentation.
 
 ## Quick Commands
 

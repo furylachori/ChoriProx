@@ -1,6 +1,6 @@
 # ChoriProx Custom Skills — Examples
 
-> For the full operator guide, see `docs/skills/custom-json-skills.md`.
+> For the full operator guide, see the internal documentation.
 
 Starting-point examples for operators who want to write their own custom
 skills. Each file in this directory is a minimal, valid JSON skill definition
@@ -38,9 +38,9 @@ give a `sudoers` entry.
 
 ## Schema reference
 
-The canonical JSON schema is defined in
-[`docs/specs/custom-skills-remediation.md §4`](../../docs/specs/custom-skills-remediation.md).
-Every file in this directory conforms to that schema. The canonical shape:
+The canonical JSON schema is defined in the internal documentation (§4 of the
+custom-skills contract). Every file in this directory conforms to that
+schema. The canonical shape:
 
 ```json
 {
@@ -107,7 +107,7 @@ The directory should not be world-readable.
 
 **Restart required.** There is no hot-reload and no `^^reload` command. Any
 change to a JSON file, or to `PROXY_SKILLS_DIR`, takes effect on the next
-proxy startup. See the spec §5.3 for the rationale (registry generation IDs,
+proxy startup. See the internal documentation (§5.3) for the rationale (registry generation IDs,
 atomic snapshot swap, active-mode invalidation, canary-cache invalidation,
 in-flight draining — all of these must be solved before hot reload can be
 added safely).

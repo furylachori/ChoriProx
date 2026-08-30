@@ -1392,8 +1392,8 @@ modified during its production.**
 
 ## Appendix: Main-Agent VFS Cache-Safe Tail Behavior
 
-Current main-agent VFS behavior governed by
-[`docs/specs/main-agent-vfs-cache-safe-tail.md`](../specs/main-agent-vfs-cache-safe-tail.md):
+Current main-agent VFS behavior governed by the internal cache-safe tail
+specification (see internal documentation):
 
 ### Canonical Main-Agent Order
 

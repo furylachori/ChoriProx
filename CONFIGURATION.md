@@ -98,7 +98,7 @@
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PROXY_SKILLS_DIR` | `<repo>/skills` | Directory containing JSON-defined custom skills. See [docs/skills/custom-json-skills.md](docs/skills/custom-json-skills.md) for the full operator guide. |
+| `PROXY_SKILLS_DIR` | `<repo>/skills` | Directory containing JSON-defined custom skills. See internal documentation for the full operator guide. |
 
 **Restart required:** Custom JSON files are loaded once at process startup.
 Edit and restart.

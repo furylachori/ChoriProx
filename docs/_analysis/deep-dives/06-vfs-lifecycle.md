@@ -217,7 +217,7 @@ completed retained conversation
 current live user-led exchange
 ```
 
-This is defined in `docs/specs/main-agent-vfs-cache-safe-tail.md` (§1, §6)
+This is defined in the internal cache-safe tail specification (§1, §6)
 and implemented in `context_v2.py`.
 
 ### Why This Position
@@ -534,7 +534,7 @@ a known out-of-scope defect in the spec addendum.
 - **`src/proxy/AGENTS.md` Lock hierarchy** (line 76): `#9 vfs_lock
   (state.py:108)`.
 
-- **`docs/specs/main-agent-vfs-cache-safe-tail.md`**: The full US-127 spec
+- **Internal documentation — main-agent VFS cache-safe tail spec**: The full US-127 spec
   (Status: Implemented, 2026-07-16). Covers placement rules (§6), provider
   contracts (§7), prefix-cache semantics (§8), budget contract (§13), scope
   contract (§11), and workspace resolution (§12).

@@ -281,7 +281,7 @@ When investigating a bug, three disciplines prevent mis-attribution:
 
 ## Quick links
 
-- Top 10 sub-AGENTS.md files (mapping of every section of the old monolithic AGENTS.md to its new home — see `.scratch_wave_reports/AGENTS_ROOT_MAPPING.md`)
+- Top 10 sub-AGENTS.md files (mapping of every section of the old monolithic AGENTS.md to its new home)
 - `src/proxy/AGENTS.md` — proxy shell + state + lock hierarchy
 - `src/proxy/pipeline/AGENTS.md` — 9-stage pipeline lifecycle
 - `src/proxy/tool_pipeline/AGENTS.md` — ToolRegistry + ToolGuard + 17 actions

@@ -145,7 +145,7 @@ continue to work.
 
 ## `SkillDefinition` — frozen dataclass (26 fields)
 
-Per `docs/specs/consolidation-research/14-phase-1d-plan.md §3.5`. Splits
+Per the internal skill-system specification (§3.5). Splits
 data (identity, tool filters, access levels, TTL) from behavior (10
 callable fields for prompts, lifecycle, dispatch, canary).
 
@@ -253,7 +253,7 @@ verbatim because each is a previous-version trap:
 what JSON supports, define a Python `BaseSkill` subclass and register via
 `registry.register_skill()`.
 
-### Custom skill parent tool admission (spec `docs/specs/custom-skill-research-swarms.md` §0.1)
+### Custom skill parent tool admission (spec internal documentation §0.1)
 
 The parent tool admission decision splits into two frozen constants:
 
@@ -404,7 +404,7 @@ EOF
 Custom skills are loaded once at proxy startup, inside
 `SkillRegistry.populate_builtins()` → `custom_skill_loader.load_custom_skills()`.
 To reload after editing, **restart the proxy.** Hot-reload is not in scope
-(Track B from `docs/skills/custom-skills-plan.md`; deferred).
+(Track B from the custom-skills plan; deferred).
 
 ### Eager startup wiring (Wave 2)
 

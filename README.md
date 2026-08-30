@@ -72,9 +72,8 @@ Workspace-scoped LRU cache for file contents, enabling cross-agent file sharing:
   retained history and immediately before the entire live exchange,
   preserving tool-call atomicity and the provider cache prefix.
 
-See the
-[main-agent VFS cache-safe tail specification](docs/specs/main-agent-vfs-cache-safe-tail.md)
-for placement, provider-role, and cache-prefix guarantees.
+See internal documentation for the full cache-safe tail placement,
+provider-role, and cache-prefix guarantees.
 
 See [CONFIGURATION.md](CONFIGURATION.md#virtual-filesystem-layer-vfs) for all VFS env vars.
 
@@ -113,8 +112,8 @@ curl -X POST http://localhost:6666/v1/chat/completions -d '{
 }'
 ```
 
-See `docs/skills/custom-json-skills.md` for the full operator guide.
-See `docs/specs/custom-skills-remediation.md` for the canonical schema.
+See internal documentation for the full operator guide and canonical
+schema.
 
 **Trust boundary:** custom JSON files are administrator-owned
 configuration. The proxy reads them but never writes. Until user roles
@@ -130,7 +129,7 @@ and gated by a deployment-wide kill switch:
 - `PROXY_ENABLE_CUSTOM_SKILL_SUBAGENTS` — must be set to exactly `"1"`
   for ANY swarm-capable custom skill to load. Unset, empty, or any other
   value causes swarm-capable skills to be rejected at startup with a
-  `swarm_*` code (see `docs/specs/custom-skill-research-swarms.md` §3).
+  `swarm_*` code (see internal documentation §3).
 - `PROXY_SESSION_SECRET` — **REQUIRED** whenever one or more
   swarm-capable skills are configured (signed swarm canaries depend on
   it). Without the secret, swarm-capable skills are rejected at startup
@@ -138,8 +137,8 @@ and gated by a deployment-wide kill switch:
 
 This is **not** admin authentication — it is defense-in-depth deployment
 configuration. The flag is read once at startup; there is no per-request
-override. See `docs/specs/custom-skill-research-swarms.md` for the full
-contract and `docs/feature-flags.md` for the operator reference.
+override. See internal documentation for the full contract and
+`docs/feature-flags.md` for the operator reference.
 
 ## Testing
 

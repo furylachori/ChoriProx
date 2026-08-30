@@ -129,7 +129,7 @@
 **THEN** `handle_direct()` MUST return a response dict immediately without calling the LLM
 **AND MUST NOT** activate ticket mode or forward the request to an upstream backend
 **AND** ONLY the `plan` action (everything else) triggers mode activation + LLM call
-**AND** `handle_direct()` MUST return an `error_response` (HTTP 409) when the active workspace is `default` — extends the read-only default-workspace policy of `docs/specs/non-default-ws-ro-proxy-ticket.md` to the `^^ticket`/`^^work` commands.
+**AND** `handle_direct()` MUST return an `error_response` (HTTP 409) when the active workspace is `default` — extends the read-only default-workspace policy of the non-default-workspace read-only `proxy_ticket` contract to the `^^ticket`/`^^work` commands.
 
 ### US-017c: Ticket SUB Tool Surface (No Nesting, Full proxy_ticket)
 **WHEN** a sub-agent is spawned inside ticket mode
@@ -184,7 +184,7 @@
 **THEN** the proxy MUST reject with HTTP 409
 **AND** the error message MUST guide the user to `^^ws create <name>`, `^^ws list`, or `^^ws help`
 **AND** ticket/work mode MUST NOT activate on the default workspace
-**NOTE:** extends the read-only default-workspace policy of `docs/specs/non-default-ws-ro-proxy-ticket.md` (which governs the `proxy_ticket` tool) to the `^^ticket`/`^^work` commands.
+**NOTE:** extends the read-only default-workspace policy of the non-default-workspace read-only `proxy_ticket` contract (which governs the `proxy_ticket` tool) to the `^^ticket`/`^^work` commands.
 
 ### US-018: Workspace Tool Filter (SUPERSEDED by US-073)
 **WHEN** workspace mode is active
@@ -606,7 +606,7 @@ adding a VFS-only barrier
 **AND** VFS MUST be omitted rather than trimming the active exchange,
 splitting tool units, or exceeding the safe request budget.
 
-**Spec:** `docs/specs/main-agent-vfs-cache-safe-tail.md`
+**Spec:** See internal documentation for the main-agent VFS cache-safe tail contract.
 **Code:** `src/proxy/context_v2.py`, `src/proxy/vfs.py`,
 `src/proxy/pipeline/provider_compat.py`
 **Tests:** `tests/unit/test_context_v2.py`,
@@ -954,7 +954,7 @@ Implementation references:
 
 > **Supersedes:** US-066 through US-072 (per-session workspace model). The behavior of `^^workspace` subcommands at the UI level is preserved (still one-shot local mutations, no LLM), but the underlying data model changes from per-session (`session_id:workspace_name`) to global (`workspace_name` bare). Workspaces become a proxy-level object visible to all sessions, enabling multi-agent collaboration.
 
-> **Spec:** `docs/specs/workspace-rework-v5.md`
+> **Spec:** See internal documentation for the workspace rework v5 contract.
 
 ### US-100: Workspace ID is a Bare Name (No Session Prefix)
 
@@ -1002,7 +1002,7 @@ Implementation references:
 **AND** the migration runs automatically at startup as part of `init_db()`
 **AND MUST NOT** be run manually (e.g. via `cypher-shell`) before the code deploy — running migration first with the old code still in place results in PRODUCTION DATA LOSS OF VISIBILITY (old code looks for compound IDs, finds none)
 **Rationale:** The old code's `make_workspace_id` returns compound IDs. The new code returns bare names. If migration 010 runs first (data → bare), then the old code's queries with compound `workspace_id` values match zero tasks. This is a one-way data-visibility loss that requires manual re-prefixing to recover. The deployment runbook documents this order.
-**Code:** `docs/specs/workspace-rework-v5.md` §6 (Deployment Runbook).
+**Code:** See internal documentation §6 (Deployment Runbook) of the workspace rework v5 contract.
 
 ### US-105: Old Compound Workspace Nodes Kept as Soft Backup
 
@@ -1013,7 +1013,7 @@ Implementation references:
 **AND** they enable rollback: if the new code is reverted, the old `:Workspace` nodes provide the original session mapping for re-prefixing tasks
 **AND** manual cleanup (`MATCH (w:Workspace) WHERE w.workspace_id CONTAINS ':' DELETE w`) is safe to run after 30+ days once the new model is confirmed stable
 **Rationale:** The new `:Workspace` nodes (bare-named) coexist with the old compound-named ones. The old nodes are inert (new code never queries them) but preserve the data lineage. Deleting them is a separate decision that the user makes explicitly.
-**Code:** No code touches old compound nodes. Documented in `docs/specs/workspace-rework-v5.md` §6.
+**Code:** No code touches old compound nodes. Documented in the internal workspace rework v5 contract §6.
 
 ### US-106: Per-Session Last-Used Workspace Tracked via `:LAST_USED_WORKSPACE`
 
@@ -1198,7 +1198,7 @@ MATCH (m:_Migration {version: 10}) DELETE m
 **AND** then restart the proxy
 **AND** the migration re-runs idempotently (the `WHERE CONTAINS ':'` filter skips already-stripped data)
 **Rationale:** Failed migration recovery is a documented pattern. The `:_Migration` deletion + restart is the standard remediation across all 10 migrations.
-**Code:** `src/memory/migrations/runner.py:run_pending()` (no change). Documented in `docs/specs/workspace-rework-v5.md` §6.
+**Code:** `src/memory/migrations/runner.py:run_pending()` (no change). Documented in the internal workspace rework v5 contract §6.
 
 ---
 

@@ -416,6 +416,6 @@ references predate the addition of position #14.
   with request-path locks held in ascending order.
 - **Companion docs.** [`docs/_analysis/ARCHITECTURE_DECOMPOSITION.md`](../ARCHITECTURE_DECOMPOSITION.md)
   §6 (memory & persistence subsystem), [`docs/_analysis/PIPELINE_MAP.md`](../PIPELINE_MAP.md)
-  (PostProcessStage), and [`docs/SPEC_UNIFIED_SOTA_SYNC.md`](../../SPEC_UNIFIED_SOTA_SYNC.md)
-  (the unified `sync_exchange` spec). Module operating context: [`src/memory/AGENTS.md`](../../../src/memory/AGENTS.md)
+  (PostProcessStage), and the unified `sync_exchange` spec (see internal
+  documentation). Module operating context: [`src/memory/AGENTS.md`](../../../src/memory/AGENTS.md)
   §"SOTA Background Sync" (lines 151-192) — noting Drift B/C above.

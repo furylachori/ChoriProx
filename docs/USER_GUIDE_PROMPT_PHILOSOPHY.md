@@ -315,7 +315,7 @@ If your use case genuinely conflicts, it's a **design problem**, not a prompt pr
 - Token count (if relevant)
 - Model used
 
-**Security issues:** Report to `security@chori-prox.org` (encrypted PGP key in `docs/SECURITY.md`).
+**Security issues:** Report to `security@chori-prox.org` (see the SECURITY policy in internal documentation).
 
 ---
 

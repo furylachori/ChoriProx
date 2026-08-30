@@ -304,4 +304,4 @@ Each of these deserves its own detailed diagram + explanation document.
 
 ---
 
-*Generated from full-repo audit at HEAD `03904a5`. See `docs/AGENTS.md` for doc taxonomy.*
+*Generated from full-repo audit at HEAD `03904a5`. See the document taxonomy in the internal documentation.*

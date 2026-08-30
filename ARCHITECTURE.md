@@ -1,6 +1,6 @@
 # ChoriProx Architecture
 
-> Last verified: 2026-06-25 | Branch: feature/custom_skills
+> Last verified: 2026-06-25 | Branch: main
 
 ## Request Flow
 
@@ -78,7 +78,6 @@ POST /v1/chat/completions
 | `eviction_coordinator.py` | Cross-cutting eviction coordination |
 | `json_formatter.py` | JSON log formatter |
 | `skill_lifecycle.py` | IoC bridge between Agent and SkillRegistry |
-| `test_script.py` | Placeholder (dead code) |
 
 ### Pipeline (`src/proxy/pipeline/`)
 | File | Purpose |
@@ -138,13 +137,14 @@ POST /v1/chat/completions
 | `executors.py` | Bounded thread pool executors |
 | `extraction_validator.py` | Entity/relationship type normalization |
 | `tools/` | Memory tool implementations (recall, search, proxy_ticket, proxy_work) |
-| `migrations/` | Neo4j schema versioning (10 migrations) |
+| `migrations/` | Neo4j schema versioning (11 migrations) |
 | `prompts/` | LLM prompts for extraction + summary |
 
 ### Skills (`src/skills/`)
 | File | Purpose |
 |------|---------|
 | `ticket_skill.py` | TicketSkill — task management via ^^ticket |
+| `work_skill.py` | WorkSkill — work-mode task management |
 | `workspace.py` | WorkspaceSkill — workspace-scoped management via ^^workspace |
 
 ### Clients (`src/clients/`)
@@ -293,6 +293,11 @@ POST /v1/chat/completions
 | #7 | Agent._mode_lock | Lock | Per-agent mode |
 | #8 | AgentTelemetry._lock | Lock | Per-agent telemetry |
 | #9 | vfs_lock | Lock | VFS cache + write log + rollback |
+| #10 | _chain_state_lock | Lock | V2 chain-hash state per (session_id, model_name) |
+| #11 | canary_verify_cache_lock | Lock | Canary verification cache |
+| #12 | log_overflow_count_lock | Lock | Leaf — never acquires other locks |
+| #13 | recovery_lock | RLock | Leaf — memory.db_recovery corruption-recovery serialization |
+| #14 | dedup_lock | Lock | Leaf — DedupStore keyed completion map (CP4) |
 
 Never acquire a lower-numbered lock while holding a higher-numbered one.
 

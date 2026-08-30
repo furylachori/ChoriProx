@@ -27,8 +27,8 @@ take effect without a restart?
 ### Option 1 — No hot reload (CHOSEN)
 
 Custom JSON files are loaded once at startup. Operators restart the
-process to apply changes. Documented in `docs/skills/custom-skills-plan.md`
-under "Restart workflow" and in the `AGENTS.md` skill_registry.py file-table
+process to apply changes. Documented in the operator guide under
+"Restart workflow" and in the `AGENTS.md` skill_registry.py file-table
 comment.
 
 **Pros:**

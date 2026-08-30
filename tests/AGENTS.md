@@ -423,6 +423,5 @@ new tests that depend on it.
 
 - [`/AGENTS.md`](../../AGENTS.md) — project-level conventions, known landmines, behavioral contracts
 - [`docs/TEST_PATTERNS.md`](../../docs/TEST_PATTERNS.md) — US-XXX traceability, builder usage, layer choice, common pitfalls
-- [`docs/HANDOVER_TEST_REMEDIATION.md`](../../docs/HANDOVER_TEST_REMEDIATION.md) — DB-level mocking (`StatefulScript`), `threading.Barrier`, Flask test client
 - [`docs/_analysis/PIPELINE_MAP.md`](../../docs/_analysis/PIPELINE_MAP.md) — 1500-line pipeline walkthrough (use for stage-by-stage test design)
 - [`USER-STORIES.md`](../../USER-STORIES.md) — `US-XXX` behavioral contracts

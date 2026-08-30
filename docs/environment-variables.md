@@ -47,7 +47,7 @@ This document lists all environment variables used by the ChoriProx proxy system
 | `PROXY_USE_ADAPTERS` | `1` | Enable model adapter system (set to "0" to disable) | No |
 | `USE_DISPATCH_EXTRACTION` | `1` | Enable dispatch extraction pipeline | No |
 | `PROXY_CACHE_METRICS_ENABLED` | `1` | Enable prompt-cache observability | No |
-| `PROXY_ENABLE_CUSTOM_SKILL_SUBAGENTS` | (unset) | Deployment-wide kill switch for swarm-capable custom JSON skills. Must be exactly `"1"` for any skill declaring a nested `subagents` block to load; unset/empty/other values cause such skills to be rejected at startup with a `swarm_*` code. Read once at startup — no per-request override. Also requires `PROXY_SESSION_SECRET` to be set; otherwise startup fails with `swarm_missing_secret`. Not authentication: this is operator-controlled deployment configuration (same trust boundary as the proxy process). See `docs/specs/custom-skill-research-swarms.md` §3. | No |
+| `PROXY_ENABLE_CUSTOM_SKILL_SUBAGENTS` | (unset) | Deployment-wide kill switch for swarm-capable custom JSON skills. Must be exactly `"1"` for any skill declaring a nested `subagents` block to load; unset/empty/other values cause such skills to be rejected at startup with a `swarm_*` code. Read once at startup — no per-request override. Also requires `PROXY_SESSION_SECRET` to be set; otherwise startup fails with `swarm_missing_secret`. Not authentication: this is operator-controlled deployment configuration (same trust boundary as the proxy process). See internal documentation §3. | No |
 
 Note: `USE_AGENT_ADAPTER` and `USE_AGENT_LIFECYCLE` are listed in older revisions of this doc but were never implemented. `USE_PROVIDER_REGISTRY` was removed in `bef35bd`. Setting any of these has no effect.
 
@@ -82,7 +82,7 @@ Note: `USE_AGENT_ADAPTER` and `USE_AGENT_LIFECYCLE` are listed in older revision
 
 | Variable | Default | Description | Required |
 |----------|---------|-------------|----------|
-| `PROXY_SKILLS_DIR` | `<repo>/skills` | Directory containing JSON-defined custom skills. Absolute or relative to repo root. Set to empty string to disable custom-skill loading. Set to a non-existent path: startup fails (Wave 2 eager init). Unset + default missing: healthy, builtins only. Restart required after changes (no hot reload). Swarm-capable skills additionally require `PROXY_ENABLE_CUSTOM_SKILL_SUBAGENTS=1` and `PROXY_SESSION_SECRET` — see `docs/specs/custom-skill-research-swarms.md` §3. | No |
+| `PROXY_SKILLS_DIR` | `<repo>/skills` | Directory containing JSON-defined custom skills. Absolute or relative to repo root. Set to empty string to disable custom-skill loading. Set to a non-existent path: startup fails (Wave 2 eager init). Unset + default missing: healthy, builtins only. Restart required after changes (no hot reload). Swarm-capable skills additionally require `PROXY_ENABLE_CUSTOM_SKILL_SUBAGENTS=1` and `PROXY_SESSION_SECRET` — see internal documentation §3. | No |
 
 Semantics (membership in `os.environ`, not truthiness):
 
@@ -96,7 +96,7 @@ Semantics (membership in `os.environ`, not truthiness):
 | `PROXY_SKILLS_DIR="rel/path"` | Resolved relative to repo root; same fatal rules apply |
 
 Hot reload is NOT supported. Restart the proxy to pick up changes.
-See `docs/specs/custom-skills-remediation.md §5` for the full contract.
+See internal documentation §5 for the full contract.
 
 ## Testing
 

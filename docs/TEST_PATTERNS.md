@@ -1,6 +1,6 @@
 # Test Patterns
 
-> Companion to `docs/HANDOVER_TEST_REMEDIATION.md` (sections "Test Harness Modules" and "Key Patterns Established"). This document covers the patterns that handover lists as TODOs: how to thread user stories into tests, when to use the builder factory, how to choose a test layer, how to disable flaky tests, and the common pitfalls the linter can't catch.
+> Companion to [`tests/AGENTS.md`](../../tests/AGENTS.md) (test-layer guide). This document covers the patterns for writing robust tests: how to thread user stories into tests, when to use the builder factory, how to choose a test layer, how to disable flaky tests, and the common pitfalls the linter can't catch.
 
 ## 1. US-XXX Traceability
 
@@ -250,7 +250,6 @@ SSE streams emit a leading comment chunk (`: Post-processing...`) before any dat
 
 ## See Also
 
-- `docs/HANDOVER_TEST_REMEDIATION.md` — DB-level mocking (`StatefulScript`), `threading.Barrier`, Flask test client, `_ensure_registry_populated` fixture.
 - `tests/conftest.py` — autouse fixtures, HTTP/Neo4j/SOTA mocking, empty-test linter.
 - `tests/builders.py` — test data factories.
 - `tests/mode_harness.py` — agent and mode test helpers.

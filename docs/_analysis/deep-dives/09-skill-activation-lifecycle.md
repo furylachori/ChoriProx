@@ -538,5 +538,5 @@ completion regardless. This is echoed in `TicketSkill.should_deactivate`'s docst
   WorkSkill `should_deactivate` drift noted above).
 - **`src/proxy/agent/AGENTS.md`** — `Agent` mode API (`set_active_mode` / `clear_active_mode` /
   `snapshot_mode`), lock #7 (`Agent._mode_lock`), `_activate_skill` / `_inherit_skill`.
-- **`docs/specs/custom-skills-remediation.md`** — the spec of record for §7.4 (turn classifier) /
+- **Internal documentation** — the spec of record for §7.4 (turn classifier) /
   §7.5 (post-process split) and the strict-schema loader contract.

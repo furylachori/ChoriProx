@@ -475,5 +475,5 @@ returns `("status", "")` (`:157-158`).
   `client_hint` invariant.
 - **`src/skills/AGENTS.md`** — `WorkspaceSkill` parser-only contract (note the subcommand
   table drift in §6 above).
-- **`docs/specs/workspace-rework-v5.md`** — the v5 global-catalog model that supersedes the
+- **Internal documentation** — the workspace rework v5 global-catalog model that supersedes the
   per-session v4 isolation.

@@ -47,10 +47,8 @@ The proxy shell owns:
 | `upstream_sse.py` | `OpenAIStreamAccumulator` + `reconstruct_openai_sse` + `UpstreamStreamError`/`UpstreamStreamProtocolError`/`UpstreamStreamLimitError` — upstream OpenAI-compatible SSE reconstruction leaf (stdlib-only). WIRED and load-bearing (ticket 199ece93 Part A): reconstructs one complete `chat.completion` dict from incremental deltas before PostProcess |
 | `streaming.py` | `make_sse_chunk`, `stream_response` |
 | `requery.py` | `requery_llm(...)` — re-query loop after memory tool execution |
-| `tool_loop_legacy.py` | `MessageBuffer` (NOT to be confused with the new `proxy/agent/message_buffer.py`) |
 | `vfs.py` | Virtual filesystem layer — caches, write-through, rollback snapshots |
 | `context.py` + `context_v2.py` | Context V2 chain-hash pipeline (V1 was deleted) |
-| `subagent.py` | Sub-agent ingress detection helpers |
 | `utils.py` | Shared utilities — `_now_iso`, `safe_content`, `extract_text_content` |
 | `requery.py` | Re-query after memory tool execution |
 | `canary.py` | **HMAC-signed canary parser + verifier** — single-source after `a69078f`/`9f3829f`. See module docstring for the parser pipeline. |
@@ -284,7 +282,7 @@ canonical wire form; `_inject_task_canaries` re-raises `StageAbort` so the
 Flask shell emits it directly. See `src/proxy/pipeline/AGENTS.md` §"Swarm
 boundary" and `src/proxy/skills/AGENTS.md` §"`SubagentPolicy` and
 `SkillDefinition.subagents`" for the full invariant set.
-`docs/specs/custom-skill-research-swarms.md` is the source of truth.
+See the internal documentation for the swarm-capable custom-skill contract.
 
 ## Landmines
 
