@@ -1,0 +1,8 @@
+{
+  "name": "test",
+  "trigger": "^^test",
+  "description": "Run the project's test suite",
+  "prompt": "Run the specified test suite. If type not specified, ask which tests to run. Use the appropriate test runner (pytest, npm test, etc.) and report results.",
+  "tool_whitelist": ["bash", "read", "glob", "grep"],
+  "aliases": ["^^t"]
+}

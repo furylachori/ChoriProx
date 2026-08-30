@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Databases and data
+data/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Secrets and config
+.env
+.env.*
+*.key
+*.pem
+proxy_api_key.txt
+proxy_config.json
+
+# Logs
+logs/
+*.log
+
+# Debug and temp
+:memory:*
+backups/
+node_modules/
+.opencode/
+.kilo/
+.scratch*/
+.archeology/
+.docrev/
+.qoder/

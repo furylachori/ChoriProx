@@ -1,0 +1,51 @@
+# Neo4j Docker setup for ChoriProx — TEST ONLY (throwaway).
+#
+# This file contains ONLY the neo4j-test service: a throwaway Enterprise Edition
+# DB for integration tests. Tests can CREATE DATABASE / wipe freely — it NEVER
+# touches prod (which lives in docker-compose.yml). Bolt on 7688.
+#
+# Because this file is isolated from docker-compose.yml, running
+#   docker compose -f docker-compose.test.yml down -v
+# resets the test container and its volume safely. It CANNOT touch prod
+# (neo4j-prod-data), which only exists in docker-compose.yml.
+#
+# Usage:
+#   docker compose -f docker-compose.test.yml up -d          # start test
+#   docker compose -f docker-compose.test.yml down -v        # stop + DELETE volume (safe — test only)
+#
+# Tests point at neo4j-test via
+#   PROXY_NEO4J_BOLT_URL=bolt://localhost:7688 NEO4J_AUTH=neo4j:testpassword
+
+services:
+  neo4j-test:
+    image: neo4j:2026.05.0-enterprise
+    container_name: choriprox-neo4j-test
+    environment:
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_AUTH: "neo4j/testpassword"
+      NEO4J_server_bolt_listen__address: "0.0.0.0:7687"
+      NEO4J_server_http_listen__address: "0.0.0.0:7474"
+      NEO4J_server_memory_heap_initial__size: "256m"
+      NEO4J_server_memory_heap_max__size: "512m"
+      NEO4J_server_memory_pagecache_size: "256m"
+    ports:
+      - "7688:7687"
+      - "7475:7474"
+    volumes:
+      - neo4j-test-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - choriprox-test
+
+volumes:
+  neo4j-test-data:
+
+networks:
+  choriprox-test:
+    driver: bridge

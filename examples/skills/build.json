@@ -1,0 +1,7 @@
+{
+  "name": "build",
+  "trigger": "^^build",
+  "description": "Build the project",
+  "prompt": "Build the project. Determine the build system from project files (Makefile, package.json, pyproject.toml, etc.), run the appropriate build command, and report results.",
+  "tool_whitelist": ["bash", "read", "glob", "grep"]
+}

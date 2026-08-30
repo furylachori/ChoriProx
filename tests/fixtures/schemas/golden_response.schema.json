@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "required": ["test_name", "model", "temperature", "seed", "request", "expected_response"],
+  "properties": {
+    "test_name": {"type": "string"},
+    "model": {"type": "string"},
+    "temperature": {"type": "number", "const": 0},
+    "seed": {"type": "integer"},
+    "request": {"type": "object", "required": ["messages", "tools"]},
+    "expected_response": {
+      "type": "object",
+      "required": ["tool_calls"],
+      "properties": {
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "arguments"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["bash", "read", "glob", "edit", "write", "webfetch", "recall", "search"]
+              },
+              "arguments": {"type": "object"},
+              "required_params_present": {"type": "boolean"},
+              "schema_valid": {"type": "boolean"}
+            }
+          }
+        },
+        "finish_reason": {"type": "string"},
+        "file_state": {"type": "object"}
+      }
+    },
+    "update_timestamp": {"type": "string"},
+    "update_mechanism": {"type": "string"}
+  }
+}

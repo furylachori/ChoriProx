@@ -1,0 +1,205 @@
+[
+  {
+    "name": "ac_2.1_system_prompt_with_ticket_manager",
+    "description": "When ticket mode is active, the system prompt must include TICKET_MANAGER_PROMPT prepended to the base system prompt.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a helpful assistant."
+        },
+        {
+          "role": "user",
+          "content": "Hello"
+        }
+      ],
+      "ticket_mode": true
+    },
+    "expected_response": {
+      "system_prompt_injected": true,
+      "injected_content": "You are a Ticket Manager. When the user activates ticket mode with '## ^^ticket Activate', you MUST call the proxy_ticket tool with the appropriate action. Use 'proxy_ticket action=activate' to enter ticket mode, 'proxy_ticket action=approve ticket_id=<id>' to approve, and 'proxy_ticket action=reject ticket_id=<id>' to reject.",
+      "base_system_prompt_preserved": true
+    }
+  },
+  {
+    "name": "ac_2.2_tool_list_includes_proxy_ticket",
+    "description": "When ticket mode is active, the tools list returned to the LLM must include the PROXY_TICKET_TOOL_DEFINITION entry.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Activate ticket mode"
+        }
+      ],
+      "ticket_mode": true,
+      "available_tools": []
+    },
+    "expected_response": {
+      "tools": [
+        {
+          "name": "proxy_ticket",
+          "description": "Manage ticket approval workflow. Actions: activate (enter ticket mode), approve (approve a ticket by ID), reject (reject a ticket by ID).",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "activate",
+                  "approve",
+                  "reject"
+                ],
+                "description": "The ticket action to perform."
+              },
+              "ticket_id": {
+                "type": "string",
+                "description": "The ticket ID to approve or reject."
+              }
+            },
+            "required": [
+              "action"
+            ]
+          }
+        }
+      ],
+      "proxy_ticket_tool_present": true
+    }
+  },
+  {
+    "name": "ac_2.3_ticket_manager_prompt_exact_string",
+    "description": "The injected TICKET_MANAGER_PROMPT must be byte-identical (no trimming, no escaping changes).",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "status"
+        }
+      ],
+      "ticket_mode": true
+    },
+    "expected_response": {
+      "prompt_string": "You are a Ticket Manager. When the user activates ticket mode with '## ^^ticket Activate', you MUST call the proxy_ticket tool with the appropriate action. Use 'proxy_ticket action=activate' to enter ticket mode, 'proxy_ticket action=approve ticket_id=<id>' to approve, and 'proxy_ticket action=reject ticket_id=<id>' to reject.",
+      "exact_match": true
+    }
+  },
+  {
+    "name": "ac_2.4_rewrite_with_ticket_activate_format",
+    "description": "A user message containing '## ^^ticket Activate' must be rewritten to set ticket_mode=True in the internal request.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "## ^^ticket Activate"
+        }
+      ]
+    },
+    "expected_response": {
+      "rewritten": true,
+      "ticket_mode_set": true,
+      "activation_keyword": "## ^^ticket Activate",
+      "canary_injected": false
+    }
+  },
+  {
+    "name": "ac_2.5_postprocess_plan_prefix",
+    "description": "When ticket mode is active and the LLM responds with a plan, the response must be prefixed with '## ^^ticket Plan\\n\\n'.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Show me the plan"
+        }
+      ],
+      "ticket_mode": true
+    },
+    "expected_response": {
+      "postprocessed": true,
+      "prefix": "## ^^ticket Plan\n\n",
+      "prefix_exact_match": true
+    }
+  },
+  {
+    "name": "ac_2.8_stale_clear_on_reactivation",
+    "description": "Calling '## ^^ticket Activate' again while already in ticket mode must clear any stale sub-state before re-entering.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "## ^^ticket Activate"
+        },
+        {
+          "role": "user",
+          "content": "## ^^ticket Activate"
+        }
+      ]
+    },
+    "expected_response": {
+      "stale_cleared": true,
+      "reactivated": true,
+      "previous_state_discarded": true
+    }
+  },
+  {
+    "name": "ac_2.9_subagent_ticket_mode_canary",
+    "description": "When spawning a sub-agent in ticket mode, the canary string '[[__SUBAGENT__:TICKET_MODE]]' must appear in the sub-agent prompt.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Delegate to sub-agent"
+        }
+      ],
+      "ticket_mode": true,
+      "spawn_subagent": true
+    },
+    "expected_response": {
+      "subagent_spawned": true,
+      "canary_present": true,
+      "canary": "[[__SUBAGENT__:TICKET_MODE]]"
+    }
+  },
+  {
+    "name": "ac_2.11_is_ticket_mode_flag_true",
+    "description": "The pipeline state field 'is_ticket_mode' must be True whenever ticket mode is active, and False otherwise.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello"
+        }
+      ],
+      "ticket_mode": true
+    },
+    "expected_response": {
+      "is_ticket_mode": true,
+      "flag_consistent": true
+    }
+  },
+  {
+    "name": "ac_2.16_subagent_skill_ticket_canary",
+    "description": "The skill-mode sub-agent canary format must be exactly '[[__SUBAGENT__:SKILL:ticket]]' with no additional whitespace or variation.",
+    "request_payload": {
+      "model": "gpt-4o",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Use ticket skill"
+        }
+      ],
+      "skill_mode": "ticket"
+    },
+    "expected_response": {
+      "canary_exact": "[[__SUBAGENT__:SKILL:ticket]]",
+      "canary_byte_identical": true,
+      "skill_mode_active": true
+    }
+  }
+]

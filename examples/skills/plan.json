@@ -1,0 +1,7 @@
+{
+  "name": "plan",
+  "trigger": "^^plan",
+  "description": "Create an execution plan",
+  "prompt": "Based on the current context and any specified task, create an execution plan. Break into phases, identify dependencies, and estimate effort. Output the plan as structured text the user can review and act on. Do not execute the plan — just create it.",
+  "tool_whitelist": ["read", "glob", "grep", "webfetch"]
+}

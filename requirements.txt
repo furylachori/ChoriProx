@@ -1,0 +1,5 @@
+neo4j>=5.0.0
+openai>=1.0.0  # Works with MiniMax OpenAI-compatible API
+flask  # Flask test client
+requests  # HTTP mocking
+prometheus_client>=0.20.0

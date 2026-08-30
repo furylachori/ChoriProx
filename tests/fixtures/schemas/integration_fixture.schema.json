@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["tool_calls", "finish_reason"],
+  "properties": {
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "arguments"],
+        "properties": {
+          "name": {"type": "string"},
+          "arguments": {"type": "object"}
+        }
+      }
+    },
+    "finish_reason": {"type": "string"},
+    "file_state": {"type": "object"}
+  }
+}

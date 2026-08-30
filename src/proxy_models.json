@@ -1,0 +1,220 @@
+{
+  "models": {
+    "qwen3-coder": {
+      "backend": "http://localhost:7777/v1/chat/completions",
+      "tool_parser": "xml",
+      "context_limit": 32000,
+      "name": "ChoriProx Qwen3 Coder",
+      "memory_injection_enabled": false,
+      "ignore_subagents": true
+    },
+    "mini": {
+      "backend": "https://api.minimax.io/v1",
+      "tool_parser": "openai",
+      "context_limit": 204800,
+      "name": "ChoriProx MiniMax M2.7",
+      "api_key_env": "MINIMAX_PLAN_API_KEY",
+      "backend_model": "MiniMax-M2.7",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "mini-m3": {
+      "backend": "https://api.minimax.io/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "name": "ChoriProx MiniMax M3",
+      "api_key_env": "MINIMAX_PLAN_API_KEY",
+      "backend_model": "MiniMax-M3",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false,
+      "budget_ratio": 0.4
+    },
+    "stepfun": {
+      "backend": "https://api.stepfun.ai/step_plan/v1/chat/completions",
+      "tool_parser": "openai",
+      "context_limit": 256000,
+      "name": "ChoriProx Stepfun Flash",
+      "api_key_env": "STEP_FUN_API_KEY",
+      "backend_model": "step-3.7-flash",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "glm": {
+      "backend": "https://ollama.com/v1",
+      "tool_parser": "openai",
+      "context_limit": 204800,
+      "name": "Ollama Cloud GLM 5.1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "backend_model": "glm-5.1",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "glm-5.2": {
+      "backend": "https://ollama.com/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "budget_ratio": 0.4,
+      "name": "Ollama Cloud GLM 5.2",
+      "api_key_env": "OLLAMA_API_KEY",
+      "backend_model": "glm-5.2:cloud",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "qwen3-coder-next": {
+      "backend": "https://ollama.com/v1",
+      "tool_parser": "openai",
+      "context_limit": 131072,
+      "name": "Ollama Cloud Qwen3 Coder Next",
+      "api_key_env": "OLLAMA_API_KEY",
+      "backend_model": "qwen3-coder-next",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-pro": {
+      "backend": "https://api.deepseek.com/chat/completions",
+      "tool_parser": "openai",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "DeepSeek V4 Pro (Direct)",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "backend_model": "deepseek-v4-pro",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-v4-flash": {
+      "backend": "https://ollama.com/v1",
+      "tool_parser": "xml",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "Ollama Cloud DeepSeek V4 Flash",
+      "api_key_env": "OLLAMA_API_KEY",
+      "backend_model": "deepseek-v4-flash:cloud",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "DeepSeek4_Pro": {
+      "backend": "https://opencode.ai/zen/go/v1",
+      "tool_parser": "xml",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "OpenCode DeepSeek V4 Pro",
+      "api_key_env": "OPENCODE_API_KEY",
+      "backend_model": "deepseek-v4-pro",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-v4-pro-cloud": {
+      "backend": "https://ollama.com/v1",
+      "tool_parser": "xml",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "Ollama Cloud DeepSeek V4 Pro",
+      "api_key_env": "OLLAMA_API_KEY",
+      "backend_model": "deepseek-v4-pro:cloud",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-v4-pro-ark": {
+      "backend": "https://ark.ap-southeast.bytepluses.com/api/coding/v3/chat/completions",
+      "tool_parser": "xml",
+      "context_limit": 1000000,
+      "name": "DeepSeek V4 Pro (Model Ark)",
+      "api_key_env": "BYTEDANCE_ARK_API_KEY",
+      "backend_model": "ark-code-latest",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false,
+      "budget_ratio": 0.4
+    },
+    "qwen3.7-plus-2026-05-26": {
+      "backend": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "budget_ratio": 0.4,
+      "name": "ChoriProx Qwen3.7 Plus (2026-05-26)",
+      "api_key_env": "DASHSCOPE_INTL_API_KEY",
+      "backend_model": "qwen3.7-plus-2026-05-26",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "qwen3.7-max-2026-06-08": {
+      "backend": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "budget_ratio": 0.4,
+      "name": "ChoriProx Qwen3.7 Max (2026-06-08)",
+      "api_key_env": "DASHSCOPE_INTL_API_KEY",
+      "backend_model": "qwen3.7-max-2026-06-08",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "qwen3.7-plus": {
+      "backend": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "budget_ratio": 0.4,
+      "name": "ChoriProx Qwen3.7 Plus",
+      "api_key_env": "DASHSCOPE_INTL_API_KEY",
+      "backend_model": "qwen3.7-plus",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "qwen3.6-plus": {
+      "backend": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+      "tool_parser": "openai",
+      "context_limit": 1000000,
+      "budget_ratio": 0.4,
+      "name": "ChoriProx Qwen3.6 Plus",
+      "api_key_env": "DASHSCOPE_INTL_API_KEY",
+      "backend_model": "qwen3.6-plus",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-v4-pro-vercel": {
+      "backend": "https://ai-gateway.vercel.sh/v1",
+      "tool_parser": "openai",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "Vercel DeepSeek V4 Pro",
+      "api_key_env": "VERCEL_PLAN_API_KEY",
+      "backend_model": "deepseek/deepseek-v4-pro",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "qwen3.7-max-vercel": {
+      "backend": "https://ai-gateway.vercel.sh/v1",
+      "tool_parser": "openai",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "Vercel Qwen 3.7 Max",
+      "api_key_env": "VERCEL_PLAN_API_KEY",
+      "backend_model": "alibaba/qwen3.7-max",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "deepseek-v4-flash-direct": {
+      "backend": "https://api.deepseek.com/chat/completions",
+      "tool_parser": "openai",
+      "context_limit": 1048576,
+      "budget_ratio": 0.4,
+      "name": "DeepSeek V4 Flash (Direct)",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "backend_model": "deepseek-v4-flash",
+      "ignore_subagents": true,
+      "memory_injection_enabled": false
+    },
+    "agnes-2.0-flash": {
+      "backend": "https://apihub.agnes-ai.com/v1",
+      "tool_parser": "openai",
+      "context_limit": 524288,
+      "name": "Agnes 2.0 Flash",
+      "api_key_env": "AGNES_API_KEY",
+      "backend_model": "agnes-2.0-flash",
+      "memory_injection_enabled": false
+    }
+  },
+  "default": {
+    "backend": "http://localhost:7777",
+    "tool_parser": "xml",
+    "context_limit": 32000
+  }
+}

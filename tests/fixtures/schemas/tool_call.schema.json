@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["name", "arguments"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "enum": ["bash", "read", "glob", "edit", "write", "webfetch", "recall", "search"]
+    },
+    "arguments": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "required_params_present": {
+      "type": "boolean"
+    },
+    "schema_valid": {
+      "type": "boolean"
+    }
+  }
+}

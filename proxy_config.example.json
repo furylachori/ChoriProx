@@ -1,0 +1,37 @@
+{
+    "_comment": "Copy to proxy_config.json and customize. proxy_config.json is gitignored.",
+    "security": {
+        "_comment_config_auth_enabled": "Set to true to require API key for /v1/context/config endpoints",
+        "config_auth_enabled": false,
+        "_comment_config_api_key_env": "Name of env var containing the API key (e.g., CONFIG_API_KEY)",
+        "config_api_key_env": null
+    },
+    "context": {
+        "_comment_enable_token_calculation": "Set to false to disable dynamic token counting",
+        "enable_token_calculation": true,
+        "_comment_max_message_content_size_kb": "Max size of a single message content for token calc (KB)",
+        "max_message_content_size_kb": 100,
+        "_comment_max_total_content_size_kb": "Max total content size for token calc (KB)",
+        "max_total_content_size_kb": 500
+    },
+    "upstream": {
+        "_comment_timeout": "Base timeout in seconds for upstream model calls (default: 1800 = 30 min). Or set PROXY_UPSTREAM_TIMEOUT env var.",
+        "timeout": 1800,
+        "_comment_timeout_multiplier": "Scale timeout by this factor for large/complex prompts (>50KB or >20 messages). Or set PROXY_UPSTREAM_TIMEOUT_MULTIPLIER env var.",
+        "timeout_multiplier": 2.0,
+        "_comment_retry_max_attempts": "Max retries on transient connection errors (ChunkedEncodingError, ConnectionReset). 0 to disable retry.",
+        "retry_max_attempts": 3,
+        "_comment_retry_base_delay": "Initial backoff delay in seconds (doubles each retry up to retry_max_delay).",
+        "retry_base_delay": 2.0,
+        "_comment_retry_max_delay": "Maximum backoff delay in seconds.",
+        "retry_max_delay": 30.0,
+        "_comment_endpoint_concurrency": "Max concurrent in-flight requests per endpoint origin. Key = scheme://host:port, value = int. Omitted endpoints are unlimited.",
+        "endpoint_concurrency": {
+            "https://ollama.com": 2
+        }
+    },
+    "streaming": {
+        "_comment_heartbeat_interval": "# seconds between SSE :keepalive comments (default: 5.0)",
+        "heartbeat_interval": 5.0
+    }
+}
