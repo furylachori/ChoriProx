@@ -42,7 +42,8 @@ def create_deactivation_handler(agent):
                     _skill_activated=False,
                     raw_user_text="",
                 )
-                skill.on_deactivate(ctx)
+                if skill.on_deactivate is not None:
+                    skill.on_deactivate(ctx)
         except Exception:
             logger.exception("Deactivation handler failed for %s",
                              getattr(mode_state, 'name', '?'))

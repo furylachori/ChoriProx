@@ -56,6 +56,12 @@ class _MockAgent:
         self.config.is_ticket_mode = is_ticket_mode
         self._active_mode = active_mode
         self.agent_id = "test_agent_001"
+        self._messages = []
+        self.context_limit_override = None
+
+        # Instance-attribute MagicMocks shadow the real clear_* methods below
+        # because tests assert on call counts; the methods exist for API parity
+        # with production Agent.
         self.clear_ticket_mode = MagicMock()
         self.set_ticket_mode = MagicMock()
         self.clear_active_mode = MagicMock()
@@ -67,12 +73,24 @@ class _MockAgent:
     def register_deactivation_callback(self, cb):
         self._deactivation_callbacks.append(cb)
 
-    is_workspace_mode = False
+    @property
+    def is_workspace_mode(self):
+        mode = self.active_mode
+        if mode is None:
+            return False
+        return getattr(mode, 'name', None) == 'workspace'
 
     @property
     def is_ticket_mode(self):
         mode = getattr(self, 'active_mode', None)
         return mode is not None and getattr(mode, 'name', None) == 'ticket'
+
+    @property
+    def is_skill_mode(self):
+        mode = self.active_mode
+        if mode is None:
+            return False
+        return not mode.is_expired()
 
     @property
     def active_mode(self):
@@ -93,7 +111,52 @@ class _MockAgent:
         return ms.name if ms else None
 
     def is_mode_expired(self):
-        return False
+        ms = self.active_mode
+        if ms is None:
+            return False
+        return ms.is_expired()
+
+    @property
+    def messages(self):
+        return list(self._messages)
+
+    @messages.setter
+    def messages(self, value):
+        self._messages = list(value)
+
+    def append_message(self, message):
+        self._messages.append(message)
+
+    def extend_messages(self, messages):
+        self._messages.extend(messages)
+
+    @property
+    def parent_agent_id(self):
+        """Mock agents are always roots — no parent link."""
+        return None
+
+    def clear_active_mode(self, expected_mode=None):
+        """Real CAS clear mirroring Agent.clear_active_mode.
+
+        Shadowed at instance level by a MagicMock in __init__ (tests assert
+        on call counts); this body is the honest fallback for doubles that
+        never install the mock.
+        """
+        if expected_mode is not None and self._active_mode is not expected_mode:
+            return False
+        self._active_mode = None
+        self._ticket_mode_ts = None
+        return True
+
+    def clear_ticket_mode(self):
+        """Legacy wrapper. Mirrors Agent.clear_ticket_mode()."""
+        return self.clear_active_mode()
+
+    def set_context_limit_override(self, tokens):
+        self.context_limit_override = tokens
+
+    def get_context_limit_override(self):
+        return self.context_limit_override
 
 
 class MockModeState:

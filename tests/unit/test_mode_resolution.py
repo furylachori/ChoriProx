@@ -80,6 +80,8 @@ class _MockAgent:
         self.agent_id = agent_id
         self.config = MagicMock()
         self._deactivation_callbacks = []
+        self._messages = []
+        self.context_limit_override = None
 
         if is_ticket_mode:
             self.active_mode = _MockActiveMode()
@@ -99,15 +101,31 @@ class _MockAgent:
             cb(old)
         return True
 
+    def clear_ticket_mode(self):
+        """Legacy wrapper. Mirrors Agent.clear_ticket_mode()."""
+        return self.clear_active_mode()
+
     def register_deactivation_callback(self, cb):
         self._deactivation_callbacks.append(cb)
 
-    is_workspace_mode = False
+    @property
+    def is_workspace_mode(self):
+        mode = getattr(self, 'active_mode', None)
+        if mode is None:
+            return False
+        return getattr(mode, 'name', None) == 'workspace'
 
     @property
     def is_ticket_mode(self):
         mode = getattr(self, 'active_mode', None)
         return mode is not None and getattr(mode, 'name', None) == 'ticket'
+
+    @property
+    def is_skill_mode(self):
+        mode = self.active_mode
+        if mode is None:
+            return False
+        return not mode.is_expired()
 
     def snapshot_mode(self):
         return self.active_mode
@@ -121,6 +139,31 @@ class _MockAgent:
 
     def is_mode_expired(self):
         return False
+
+    @property
+    def messages(self):
+        return list(self._messages)
+
+    @messages.setter
+    def messages(self, value):
+        self._messages = list(value)
+
+    def append_message(self, message):
+        self._messages.append(message)
+
+    def extend_messages(self, messages):
+        self._messages.extend(messages)
+
+    @property
+    def parent_agent_id(self):
+        """Mock agents are always roots — no parent link."""
+        return None
+
+    def set_context_limit_override(self, tokens):
+        self.context_limit_override = tokens
+
+    def get_context_limit_override(self):
+        return self.context_limit_override
 
 
 def _make_agent(is_ticket_mode=False, agent_id="mock_agent", active_mode_age=0):

@@ -22,6 +22,7 @@ import ast
 import logging
 import sys
 import threading
+import time
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -686,6 +687,7 @@ def mock_agent_registry_get_or_load(request):
             self.session_id = session_id
             self.agent_id = f"agent_{session_id}"
             self.context_limit_override = None
+            self._messages = []
 
         def set_context_limit_override(self, tokens):
             self.context_limit_override = tokens
@@ -695,27 +697,74 @@ def mock_agent_registry_get_or_load(request):
 
         def set_active_mode(self, mode_state, expected_mode=None):
             self.active_mode = mode_state
+            self._ticket_mode_ts = (
+                time.time()
+                if mode_state is not None
+                and getattr(mode_state, "name", None) == "ticket"
+                else None
+            )
             return True
-        
+
         def clear_active_mode(self, expected_mode=None):
             self.active_mode = None
             self._ticket_mode_ts = None
             return True
-        
+
+        def clear_ticket_mode(self):
+            """Legacy wrapper. Mirrors Agent.clear_ticket_mode()."""
+            return self.clear_active_mode()
+
         def register_deactivation_callback(self, cb):
             self._deactivation_callbacks.append(cb)
-        
+
         def snapshot_mode(self):
             return self.active_mode
-        
+
         def snapshot_mode_and_ticket_ts(self):
             return self.active_mode, self._ticket_mode_ts
-        
+
         def get_mode_name(self):
             return self.active_mode.name if self.active_mode else None
-        
+
         def is_mode_expired(self):
             return False
+
+        @property
+        def messages(self):
+            return list(self._messages)
+
+        @messages.setter
+        def messages(self, value):
+            self._messages = list(value)
+
+        def append_message(self, message):
+            self._messages.append(message)
+
+        def extend_messages(self, messages):
+            self._messages.extend(messages)
+
+        @property
+        def parent_agent_id(self):
+            """Mock agents are always roots — no parent link."""
+            return None
+
+        @property
+        def is_ticket_mode(self):
+            mode = self.active_mode
+            if mode is None:
+                return self._ticket_mode_ts is not None
+            return getattr(mode, "name", None) == "ticket"
+
+        @property
+        def is_skill_mode(self):
+            return self.active_mode is not None
+
+        @property
+        def is_workspace_mode(self):
+            mode = self.active_mode
+            if mode is None:
+                return False
+            return getattr(mode, "name", None) == "workspace"
     
     agents = {}
 

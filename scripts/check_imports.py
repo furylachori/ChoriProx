@@ -28,7 +28,12 @@ def resolve_module_path(module_name):
 
 
 def get_module_exports(filepath):
-    """Get all top-level names defined in a Python file."""
+    """Get all module-level names defined in a Python file.
+
+    Includes names bound inside top-level compound statements (try/except,
+    if, with) — a common pattern for optional imports and fallbacks — but
+    not names local to function/class bodies.
+    """
     try:
         source = filepath.read_text()
     except (OSError, UnicodeDecodeError):
@@ -39,24 +44,84 @@ def get_module_exports(filepath):
         return None
 
     names = set()
-    for node in ast.iter_child_nodes(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            names.add(node.name)
-        elif isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name):
-                    names.add(target.id)
-                elif isinstance(target, ast.Tuple):
-                    for elt in target.elts:
-                        if isinstance(elt, ast.Name):
-                            names.add(elt.id)
-        elif isinstance(node, ast.ImportFrom):
-            for alias in node.names:
-                names.add(alias.asname or alias.name)
-        elif isinstance(node, ast.Import):
-            for alias in node.names:
-                names.add(alias.asname or alias.name.split(".")[0])
+
+    def _add_target(target):
+        if isinstance(target, ast.Name):
+            names.add(target.id)
+        elif isinstance(target, ast.Tuple):
+            for elt in target.elts:
+                if isinstance(elt, ast.Name):
+                    names.add(elt.id)
+
+    def _scan(stmts):
+        for node in stmts:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                names.add(node.name)
+                # PEP 562: a module-level __getattr__ lazily exports names it
+                # compares against (e.g. `if name == "SOTAMode":`). Collect
+                # those literals as exports.
+                if isinstance(node, ast.FunctionDef) and node.name == "__getattr__":
+                    for sub in ast.walk(node):
+                        if isinstance(sub, ast.Compare):
+                            for side in [sub.left, *sub.comparators]:
+                                if isinstance(side, ast.Constant) and isinstance(side.value, str):
+                                    names.add(side.value)
+                # do NOT descend into other bodies: those names are not exports
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    _add_target(target)
+            elif isinstance(node, ast.AnnAssign) and node.target is not None:
+                _add_target(node.target)
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    names.add(alias.asname or alias.name)
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    names.add(alias.asname or alias.name.split(".")[0])
+            elif isinstance(node, ast.Try):
+                _scan(node.body)
+                for handler in node.handlers:
+                    _scan(handler.body)
+                _scan(node.orelse)
+                _scan(node.finalbody)
+            elif isinstance(node, (ast.If, ast.With)):
+                _scan(node.body)
+                if isinstance(node, ast.If):
+                    _scan(node.orelse)
+
+    _scan(tree.body)
     return names
+
+
+def _negative_import_ranges(tree):
+    """Line ranges of `with assertRaises(ImportError)` / `pytest.raises(ImportError)`
+    blocks. Imports inside are intentional failure tests and must not be flagged."""
+    ranges = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.With):
+            continue
+        for item in node.items:
+            call = item.context_expr
+            if not isinstance(call, ast.Call) or not call.func:
+                continue
+            func = call.func
+            fname = None
+            if isinstance(func, ast.Attribute):
+                fname = func.attr
+            elif isinstance(func, ast.Name):
+                fname = func.id
+            if fname not in ("assertRaises", "raises"):
+                continue
+            exc_names = []
+            for arg in call.args:
+                if isinstance(arg, ast.Name):
+                    exc_names.append(arg.id)
+                elif isinstance(arg, ast.Attribute):
+                    exc_names.append(arg.attr)
+            if any(e in ("ImportError", "ModuleNotFoundError") for e in exc_names):
+                end = getattr(node, "end_lineno", node.lineno)
+                ranges.append((node.lineno, end))
+    return ranges
 
 
 def check_file_imports(py_file):
@@ -71,8 +136,12 @@ def check_file_imports(py_file):
     except SyntaxError:
         return broken
 
+    neg_ranges = _negative_import_ranges(tree)
+
     for node in ast.walk(tree):
         if not isinstance(node, ast.ImportFrom):
+            continue
+        if any(start <= node.lineno <= end for start, end in neg_ranges):
             continue
         module = node.module
         if not module:
@@ -94,9 +163,17 @@ def check_file_imports(py_file):
             name = alias.name
             if name == "*":
                 continue
-            if name not in exports:
-                rel = py_file.relative_to(ROOT)
-                broken.append((str(rel), node.lineno, module, name, f"'{name}' not in {module}"))
+            if name in exports:
+                continue
+            # `from pkg import sub` may import a submodule/subpackage, not a
+            # name exported by pkg/__init__.py. Accept it if that submodule
+            # exists under the package directory.
+            if mod_path.name == "__init__.py":
+                pkg_dir = mod_path.parent
+                if (pkg_dir / f"{name}.py").exists() or (pkg_dir / name / "__init__.py").exists():
+                    continue
+            rel = py_file.relative_to(ROOT)
+            broken.append((str(rel), node.lineno, module, name, f"'{name}' not in {module}"))
 
     return broken
 

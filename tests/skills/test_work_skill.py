@@ -104,7 +104,10 @@ class TestWorkSkillSkillDefinition:
         assert "grep" in tools
         assert "search" in tools
         assert "proxy_work" in tools
-        assert "proxy_ticket" in tools
+        # Decomposed read-only ticket tools (monolithic proxy_ticket was split).
+        assert "proxy_ticket_list_tasks" in tools
+        assert "proxy_ticket_get_task" in tools
+        assert "proxy_ticket_append_review_note" in tools
         assert "task" not in tools
 
     def test_work_skill_sub_agent_proxy_work_access_is_full(self):
@@ -326,7 +329,11 @@ class TestWorkSkillToolFilter(unittest.TestCase):
         self.assertIn("edit", tools)
         self.assertIn("read", tools)
         self.assertIn("proxy_work", tools)
-        self.assertIn("proxy_ticket", tools)
+        # Decomposed ticket tools (monolithic proxy_ticket was split per-action);
+        # work mode holds the read-only ticket set.
+        self.assertIn("proxy_ticket_list_tasks", tools)
+        self.assertIn("proxy_ticket_get_task", tools)
+        self.assertIn("proxy_ticket_append_review_note", tools)
 
 
 if __name__ == "__main__":

@@ -116,7 +116,9 @@ class TestTicketSkillToolFilter(unittest.TestCase):
         self.assertIn("glob", tools)
         self.assertIn("grep", tools)
         self.assertIn("search", tools)
-        self.assertIn("proxy_ticket", tools)
+        # Decomposed ticket tools (monolithic proxy_ticket was split per-action).
+        self.assertIn("proxy_ticket_list_tasks", tools)
+        self.assertIn("proxy_ticket_get_task", tools)
 
     def test_get_tool_filter_contains_task(self):
         """Ticket mode sub-agents should have task tool."""

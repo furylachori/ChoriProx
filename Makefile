@@ -4,6 +4,11 @@ PYTHON ?= python3
 PYTEST ?= $(PYTHON) -m pytest
 WORKERS ?= 4
 
+# src/ must be importable for the top-level `config` module and package
+# resolution; matches the documented `PYTHONPATH=src python3 -m pytest ...`
+# invocation. Prepend so we don't clobber a pre-existing PYTHONPATH.
+export PYTHONPATH := src$(if $(PYTHONPATH),:$(PYTHONPATH))
+
 help:
 	@echo "Test targets:"
 	@echo "  test              Run unit + integration + proxy + tests/ root tests in parallel (-n $(WORKERS))"
@@ -31,7 +36,9 @@ test-unit:
 #   docker compose -f docker-compose.test.yml up -d neo4j-test
 test-integration:
 	docker compose -f docker-compose.test.yml up -d --wait neo4j-test 2>/dev/null || true
+	rm -f data/memory_integration_test.db data/memory_integration_test.db-shm data/memory_integration_test.db-wal
 	PROXY_NEO4J_BOLT_URL=bolt://localhost:7688 NEO4J_AUTH=neo4j:testpassword \
+	PROXY_TEST_DB=data/memory_integration_test.db \
 	$(PYTEST) tests/integration -m "not e2e_real" -n $(WORKERS) --dist=loadfile -v
 
 test-proxy:
