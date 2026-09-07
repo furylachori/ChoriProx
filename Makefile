@@ -1,4 +1,4 @@
-.PHONY: help test test-unit test-integration test-proxy test-e2e test-e2e-real test-clients test-root coverage install-test-deps check debug-templates
+.PHONY: help test test-unit test-integration test-proxy test-e2e test-e2e-real test-clients test-root coverage install-test-deps check check-publication debug-templates
 
 PYTHON ?= python3
 PYTEST ?= $(PYTHON) -m pytest
@@ -21,6 +21,7 @@ help:
 	@echo "  test-root         Run tests/ root only (skips unit/integration/proxy/e2e/e2e_real subtrees)"
 	@echo "  coverage          Run coverage with floor gates: clients 90 / memory 56 / proxy 66 / overall 63 + 8 per-file gates"
 	@echo "  install-test-deps Install test dependencies"
+	@echo "  check-publication Scan publishable files, all Git history, and metadata for secrets/PII"
 	@echo ""
 	@echo "  Worker count: $(WORKERS) (override with make test WORKERS=8)"
 
@@ -91,6 +92,9 @@ coverage:
 check:
 	$(PYTHON) scripts/check_mock_drift.py
 	$(PYTHON) scripts/check_imports.py
+
+check-publication:
+	$(PYTHON) scripts/check_publication.py
 
 # Run the debug_session reproducer templates (tests/debug/templates/*.py).
 # Each template exits 0 on all-ok / 1 on any failure via _finish() in

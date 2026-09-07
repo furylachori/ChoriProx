@@ -190,6 +190,7 @@ make coverage
 | [CONFIGURATION.md](CONFIGURATION.md) | All env vars, config files, feature flags, rate limiters, tool limits |
 | [USER-STORIES.md](USER-STORIES.md) | Behavioral contracts, including VFS cache-safe tail placement |
 | [AGENTS.md](AGENTS.md) | Agent operating context, code conventions, known landmines |
+| [docs/publication.md](docs/publication.md) | Secret/PII checks and safe GitHub publication |
 | [docs/](docs/) | Specs, ADRs, implementation plans, prompt designs |
 
 ## Security Status

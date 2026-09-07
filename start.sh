@@ -43,13 +43,14 @@ export PROXY_SOTA_TIMEOUT="${PROXY_SOTA_TIMEOUT:-180}"
 export PROXY_SOTA_SUMMARY_GATE="${PROXY_SOTA_SUMMARY_GATE:-true}"
 
 echo "Starting ChoriProx on port $PORT..."
-echo "  OPENCODE_API_KEY:    ${OPENCODE_API_KEY:0:10}..."
-echo "  MIMO_API_KEY:        ${MIMO_API_KEY:0:10}..."
-echo "  STEP_FUN_API_KEY:    ${STEP_FUN_API_KEY:0:10}..."
-echo "  ARK_MODEL_ARK_API_KEY: ${ARK_MODEL_ARK_API_KEY:0:10}..."
-echo "  BAILIAN_TOKEN_PLAN_API_KEY: ${BAILIAN_TOKEN_PLAN_API_KEY:0:10}..."
-echo "  DASHSCOPE_INTL_API_KEY: ${DASHSCOPE_INTL_API_KEY:0:10}..."
-echo "  PROXY_API_KEY:       ${PROXY_API_KEY:0:10}... (saved to data/proxy_api_key.txt)"
-echo "  NEO4J_AUTH:          ${NEO4J_AUTH:0:10}..."
+for credential_name in OPENCODE_API_KEY MIMO_API_KEY STEP_FUN_API_KEY \
+    ARK_MODEL_ARK_API_KEY BAILIAN_TOKEN_PLAN_API_KEY DASHSCOPE_INTL_API_KEY \
+    PROXY_API_KEY NEO4J_AUTH; do
+    if [ -n "${!credential_name}" ]; then
+        printf '  %s: configured\n' "$credential_name"
+    else
+        printf '  %s: not configured\n' "$credential_name"
+    fi
+done
 
 PYTHONPATH=src exec python3 src/qwen_proxy.py

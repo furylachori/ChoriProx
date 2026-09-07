@@ -1,0 +1,53 @@
+title = "ChoriProx publication checks"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "personal-email"
+description = "Review personal contact information before publication"
+regex = '''\b[A-Za-z0-9][A-Za-z0-9._%+-]*@[A-Za-z0-9][A-Za-z0-9.-]*\.[A-Za-z]{2,}\b'''
+
+[[rules.allowlists]]
+description = "Reserved example domains and public GitHub no-reply identities"
+regexTarget = "match"
+regexes = ['''(?i)^[^@]+@(?:example\.(?:com|org|net)|(?:[a-z0-9.-]+\.)?test|users\.noreply\.github\.com)$''']
+
+[[rules.allowlists]]
+description = "Intentional public project security and AI contributor contacts"
+regexTarget = "match"
+regexes = [
+    '''^ds\-coder@anthropic\.com$''',
+    '''^security@chori\-prox\.org$''',
+]
+
+[[rules]]
+id = "personal-home-path"
+description = "Review workstation account names before publication"
+regex = '''(?:/Users/|/home/|[A-Za-z]:[\\/]Users[\\/])([A-Za-z0-9_.-]+)'''
+# Default global filesystem-path exclusions must not suppress private accounts.
+secretGroup = 1
+
+[[rules.allowlists]]
+description = "Explicitly synthetic account names used by path-handling fixtures"
+regexTarget = "match"
+regexes = ['''^(?:/Users/|/home/)(?:user|me|dev|someone|secret|u|x|alice|path|admin)$''']
+
+[[allowlists]]
+description = "Exact synthetic TEST_API_KEY used only by the mock-backend harness"
+regexTarget = "secret"
+regexes = ['''^sk\-test\-secret\-key\-12345$''']
+
+[[allowlists]]
+description = "Exact test-only session values, canary disclosure sentinels, and a registry invariant comment"
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = [
+    '''^SECRET\-MARKER\-DETECT\-12345$''',
+    '''^SECRET\-MARKER\-INGRESS\-12345$''',
+    '''^SECRET\-MARKER\-SWARM\-XYZ\-12345$''',
+    '''^SECRET\-MARKER\-XYZ\-12345$''',
+    '''^cp2a\-test\-secret\-key\-98765$''',
+    '''^is_passthrough=True$''',
+    '''^test\-secret\-32\-bytes\-0123456789$''',
+]

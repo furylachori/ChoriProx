@@ -37,18 +37,36 @@ htmlcov/
 *.db-wal
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3-shm
+*.sqlite3-wal
+*.db-journal
+*.sqlite-journal
+*.sqlite3-journal
+*.dump
 
 # Secrets and config
 .env
 .env.*
+!.env.example
+!.env.sample
 *.key
 *.pem
+*.p12
+*.pfx
+*.ppk
+.netrc
+.npmrc
+.pypirc
+.git-credentials
 proxy_api_key.txt
 proxy_config.json
 
 # Logs
 logs/
 *.log
+*.log.*
 
 # Debug and temp
 :memory:*
@@ -60,3 +78,12 @@ node_modules/
 .archeology/
 .docrev/
 .qoder/
+.claude/settings.local.json
+.codex/auth.json
+.codex/history.jsonl
+.codex/sessions/
+.codex/log/
+.gitleaksignore
+chat_dumps/
+debug_inbound/
+debug_upstream_sse/
