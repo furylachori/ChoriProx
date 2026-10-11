@@ -13,9 +13,11 @@ targets:
 Both configs use Python 3.12.14 on Debian Bookworm, an `E2_STANDARD_2` worker,
 Cloud Logging only, and the existing `ci-pr-smoke` service account. Each config
 is a single build step so dependency installation and checks share the same
-pinned runtime image. The step installs Debian's `sqlite3` command-line utility,
-which the database-recovery unit tests invoke. The step also installs GNU Make,
-which the existing test targets require.
+pinned runtime image. Both steps install Debian's `sqlite3` command-line
+utility, which the database-recovery unit tests invoke, and GNU Make, which the
+existing test targets require. The full step also installs Git because 13
+unskipped `PublicationCollectionTests` in `tests/test_publication_check.py`
+create Git repositories during setup.
 The Neo4j URL is explicitly set to loopback port 7688; neither config starts a
 database container or targets the production Neo4j port.
 
@@ -26,6 +28,10 @@ except for the separately tracked hardware benchmark below.
 The full lane adds `tests/proxy`, top-level `tests/test_*.py`, and mocked tests
 under `tests/e2e`. The standard unit targets exclude only the hardware benchmark
 named below. The Makefile targets preserve nonzero exit status on other failures.
+In the full lane, seven `PublicationScannerTests` methods are explicitly
+skipped by their `skipUnless(SCANNER)` guard because Gitleaks is not installed.
+The fast lane does not run the root tests; Git-backed publication integrity
+tests do run in the full lane.
 
 The standard-runtime lanes explicitly exclude
 `tests/unit/test_v2_concurrency.py::TestLargeSession::test_10k_messages_chain_and_v2_under_thresholds`.
@@ -53,17 +59,26 @@ reproducible.
 
 ## Local timing and Cloud Build estimate
 
-Local timings below are from Python 3.12.14 in a temporary virtual environment.
-The fast total includes 16.1 seconds for the two pip installs; the full total
-adds the same measured pip-install time to its test sequence, which reused the
-installed environment. The local sandbox lacked the `sqlite3` command-line
-utility, so the three recovery-test failures caused by that missing tool are
-recorded as observed. Both Cloud Build configs install the utility from Debian
-Bookworm before running. The attempt to fetch Debian packages locally was
-blocked by the sandbox proxy, so that package install was not measured here.
-The local measurements below are the original unfiltered runs, before the
-final config excluded the hardware benchmark. The final configs exclude only
-that named test and retain nonzero failures for all remaining checks.
+The earlier temporary-venv measurements (fast 2m50s; full 4m55s) predated the
+final benchmark exclusion and package installation. In the exact
+`python:3.12.14-slim-bookworm` image, I ran the configured full sequence after
+installing `git`, `make`, and `sqlite3`, then separately reran the
+Git-dependent `PublicationCollectionTests`. The combined setup, full sequence,
+and focused rerun took 346 seconds. `make check` passed. The full test targets
+returned nonzero: unit reported 3 failed and 4,010 passed; proxy reported 8
+failed, 695 passed, 1 skipped, 1 xfailed, and 7 subtests; root reported 2
+failed, 157 passed, 7 skipped, 11 errors, and 5 subtests; mocked e2e reported
+46 passed. Unit failures were three `OSError: could not get source code`
+errors in database-recovery and migration tests. Proxy and root failures were
+`TrustToken.for_trusted_caller()` caller-file mismatch errors. The focused
+`PublicationCollectionTests` run passed all 13 tests in 2.84s, confirming the
+Git package dependency. No test or application code changed.
+
+The earlier fast baseline had three database-recovery tests fail because the
+temporary virtual environment lacked the `sqlite3` command-line utility, and
+the hardware benchmark below exceeded its limit. The final configs install
+`sqlite3` and exclude only that named benchmark; the selected-image full run
+shows that other failures remain nonzero as intended.
 Cloud Build estimates use the standard `E2_STANDARD_2` rate
 of USD 0.006 per build minute and include generous setup/runtime margin over the
 measured local command timings. They exclude PR event volume, package download
@@ -71,19 +86,15 @@ egress, log storage/retention, and any free-tier or temporary credits.
 
 | Config | Measured local duration | Conservative Cloud Build duration | Estimate per run |
 | --- | ---: | ---: | ---: |
-| Fast PR (`cloudbuild.yaml`) | 2m50s; 4,010 passed, 4 failed before benchmark exclusion | 8 min | USD 0.048 |
-| Full offline (`cloudbuild.full.yaml`) | 4m55s; unit 4 failed, proxy/root/e2e completed before benchmark exclusion | 15 min | USD 0.090 |
+| Fast PR (`cloudbuild.yaml`) | 2m50s earlier baseline; 4,010 passed, 4 failed before final exclusions | 8 min | USD 0.048 |
+| Full offline (`cloudbuild.full.yaml`) | 346s setup + full sequence + focused publication rerun; full sequence failed as detailed above | 15 min | USD 0.090 |
 
-The fast failure was not hidden: three database-recovery tests could not invoke
-`sqlite3` in the local sandbox, and
+The fast baseline's hardware failure was not hidden:
 `tests/unit/test_v2_concurrency.py::TestLargeSession::test_10k_messages_chain_and_v2_under_thresholds`
-exceeded its 200 ms limit (640.6 ms in the fast run; 729.7 ms in the full run).
-The full run continued after the unit target failed: proxy reported 704 passed,
-1 xfailed, and 7 subtests; root reported 170 passed, 7 skipped, and 5 subtests;
-mocked e2e reported 46 passed. This is evidence from the local environment, not
-a Cloud Build result. The three SQLite failures should be addressed by the
-configured Debian `sqlite3` install; the benchmark is excluded from standard
-runtime builds and remains a separate performance-validation decision.
+it exceeded its 200 ms limit (640.6 ms in the fast baseline; 729.7 ms in the
+full baseline). It is excluded from standard runtime builds and remains a
+separate performance-validation decision. These results are local evidence,
+not Cloud Build results.
 
 At the 15-minute estimate, two full runs per day for a 30-day month cost about
 USD 5.40 in build minutes. The full config has a 60-minute hard timeout; at
