@@ -74,6 +74,28 @@ errors in database-recovery and migration tests. Proxy and root failures were
 `PublicationCollectionTests` run passed all 13 tests in 2.84s, confirming the
 Git package dependency. No test or application code changed.
 
+Triage against the saved tracebacks and checked-in source did not find a
+missing executable or package behind these failures: the three unit cases
+explicitly call `inspect.getsource`, the referenced Python files are present,
+and `inspect` raises `OSError: could not get source code` after its line-cache
+lookup returns no lines. The log does not capture the imported module loader or
+the exact `co_filename` values, so it cannot distinguish an import/source-cache
+path mismatch from a test-source lookup defect. The bounded follow-up is to
+record those values in the failing worker and correct the source lookup or
+assertion fixture; these tests were not excluded.
+
+The TrustToken failures are also not explained by a missing tool. The checked-in
+guard compares the caller module's `__file__` value with the caller frame's
+`co_filename`; it raises if the module is absent from `sys.modules`, or if
+`__file__` is missing/`None` or unequal to `co_filename`. The saved log does
+not print module presence or either path, so it does not establish whether
+pytest's import path caused a false mismatch or the caller was genuinely
+synthetic. The bounded follow-up is to capture module presence and both values
+in the same selected-image test context, then have the security owner review
+any path-resolution change while preserving synthetic-frame rejection. None of
+the failing cases were excluded, and the guard was not weakened to hide these
+results.
+
 The earlier fast baseline had three database-recovery tests fail because the
 temporary virtual environment lacked the `sqlite3` command-line utility, and
 the hardware benchmark below exceeded its limit. The final configs install
