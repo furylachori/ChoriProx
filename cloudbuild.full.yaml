@@ -1,0 +1,22 @@
+steps:
+  - name: python:3.12.14-slim-bookworm
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git make sqlite3
+        rm -rf /var/lib/apt/lists/*
+        python -m pip install --disable-pip-version-check -r requirements.txt
+        python -m pip install --disable-pip-version-check -e ".[test]"
+        status=0
+        if ! make check; then status=1; fi
+        if ! make -k test-unit test-proxy test-root test-e2e WORKERS=2 PYTEST="python -m pytest -k 'not test_10k_messages_chain_and_v2_under_thresholds'"; then status=1; fi
+        exit "$status"
+    env:
+      - PROXY_NEO4J_BOLT_URL=bolt://127.0.0.1:7688
+timeout: 3600s
+options:
+  machineType: E2_STANDARD_2
+  logging: CLOUD_LOGGING_ONLY
+serviceAccount: projects/project-33a976dd-e360-4c43-8d9/serviceAccounts/ci-pr-smoke@project-33a976dd-e360-4c43-8d9.iam.gserviceaccount.com
