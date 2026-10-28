@@ -59,48 +59,75 @@ reproducible.
 
 ## Local timing and Cloud Build estimate
 
+On 2026-10-28, a clean isolated checkout of
+`e97d5bea775d50328adf7ea275c0af3f493bd452` passed the configured full sequence
+unchanged in `python:3.12.14-slim-bookworm`, resolved to
+`sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e`.
+The local container used `--cpus=2`; dependency installation selected pytest
+9.2.0. The shell body from
+[`cloudbuild.full.yaml`](cloudbuild.full.yaml) ran with
+`PROXY_NEO4J_BOLT_URL=bolt://127.0.0.1:7688`, including its apt and pip steps,
+followed by these commands:
+
+```sh
+status=0
+if ! make check; then status=1; fi
+if ! make -k test-unit test-proxy test-root test-e2e WORKERS=2 PYTEST="python -m pytest -k 'not test_10k_messages_chain_and_v2_under_thresholds'"; then status=1; fi
+exit "$status"
+```
+
+Exit status was zero: `make check` passed; unit reported 4,013 passed; proxy
+703 passed, 1 skipped, 1 xfailed, and 7 subtests; root 170 passed, 7 skipped,
+and 5 subtests; mocked e2e 46 passed. The resumed setup and full sequence took
+316.815 seconds. The first setup attempt had stopped at a pip TLS certificate
+error specific to this environment. The host's existing
+`environment-proxy-ca.crt` was imported into the temporary container's trust
+store, with certificate verification enabled. Git, Make, and sqlite3 were
+already installed by that first attempt. The timing excludes the failed attempt
+and CA setup, so it is not a fresh-image installation benchmark.
+
+The historical selected-image run remains relevant: setup, the full sequence,
+and a focused publication rerun took 346 seconds. `make check` passed, but
+unit reported 3 failed/4,010 passed; proxy 8 failed/695 passed/1 skipped/1
+xfailed/7 subtests; root 2 failed/157 passed/7 skipped/11 errors/5 subtests;
+mocked e2e 46 passed. The focused `PublicationCollectionTests` run passed all
+13 tests in 2.84s. The three unit failures were `inspect.getsource` errors;
+proxy/root failures were TrustToken caller-file mismatches. Those logs did not
+record module paths, cache provenance, or the resolved pytest version, so the
+original cause cannot be established from them.
+
+A controlled experiment in the same image, with pytest 9.1.1 and otherwise
+unchanged dependencies, reproduced that failure pattern. Collection generated
+assertion-rewrite bytecode in one checkout; moving that checkout with its
+caches produced 13 failed, 84 passed, and 11 errors across 108 selected tests
+(3 unit failures, 8 proxy failures, 2 root failures, and 11 root errors).
+The failing modules existed in `sys.modules`, and their `__file__` and spec
+origin pointed at the moved checkout, but `co_filename` retained the nonexistent
+original path. Their loader was `AssertionRewritingHook`; linecache returned
+no source lines. Production modules loaded by `SourceFileLoader` had matching
+current paths. Deleting only the copied `.pyc` files and rerunning the same
+selection passed all 108 tests, with matching paths and available source.
+
+Pytest 9.2.0 passed all 108 tests even with relocated caches. Its
+[release notes, issue #14552](https://docs.pytest.org/en/stable/changelog.html#pytest-9-2-0-2026-10-27)
+document the correction of stale `co_filename` values when cached test modules
+move. For older pytest environments, use a clean checkout or rebuild disposable
+bytecode after relocating source. This establishes an environment-only cause
+that reproduces the historical symptoms, not proof of the historical cache
+state. No repository packaging/path defect was confirmed, and no application,
+test, guard, dependency requirement, or build configuration changed. In
+particular, the TrustToken path comparison and synthetic-frame rejection remain
+intact; no additional tests were excluded. Logs and diagnostics are retained
+outside the repository, with the investigation summarized in
+[PR #1](https://github.com/furylachori/ChoriProx/pull/1).
+
 The earlier temporary-venv measurements (fast 2m50s; full 4m55s) predated the
-final benchmark exclusion and package installation. In the exact
-`python:3.12.14-slim-bookworm` image, I ran the configured full sequence after
-installing `git`, `make`, and `sqlite3`, then separately reran the
-Git-dependent `PublicationCollectionTests`. The combined setup, full sequence,
-and focused rerun took 346 seconds. `make check` passed. The full test targets
-returned nonzero: unit reported 3 failed and 4,010 passed; proxy reported 8
-failed, 695 passed, 1 skipped, 1 xfailed, and 7 subtests; root reported 2
-failed, 157 passed, 7 skipped, 11 errors, and 5 subtests; mocked e2e reported
-46 passed. Unit failures were three `OSError: could not get source code`
-errors in database-recovery and migration tests. Proxy and root failures were
-`TrustToken.for_trusted_caller()` caller-file mismatch errors. The focused
-`PublicationCollectionTests` run passed all 13 tests in 2.84s, confirming the
-Git package dependency. No test or application code changed.
-
-Triage against the saved tracebacks and checked-in source did not find a
-missing executable or package behind these failures: the three unit cases
-explicitly call `inspect.getsource`, the referenced Python files are present,
-and `inspect` raises `OSError: could not get source code` after its line-cache
-lookup returns no lines. The log does not capture the imported module loader or
-the exact `co_filename` values, so it cannot distinguish an import/source-cache
-path mismatch from a test-source lookup defect. The bounded follow-up is to
-record those values in the failing worker and correct the source lookup or
-assertion fixture; these tests were not excluded.
-
-The TrustToken failures are also not explained by a missing tool. The checked-in
-guard compares the caller module's `__file__` value with the caller frame's
-`co_filename`; it raises if the module is absent from `sys.modules`, or if
-`__file__` is missing/`None` or unequal to `co_filename`. The saved log does
-not print module presence or either path, so it does not establish whether
-pytest's import path caused a false mismatch or the caller was genuinely
-synthetic. The bounded follow-up is to capture module presence and both values
-in the same selected-image test context, then have the security owner review
-any path-resolution change while preserving synthetic-frame rejection. None of
-the failing cases were excluded, and the guard was not weakened to hide these
-results.
-
-The earlier fast baseline had three database-recovery tests fail because the
-temporary virtual environment lacked the `sqlite3` command-line utility, and
+final benchmark exclusion and package installation. The fast baseline had three
+database-recovery tests fail because the temporary virtual environment lacked
+the `sqlite3` command-line utility, and
 the hardware benchmark below exceeded its limit. The final configs install
-`sqlite3` and exclude only that named benchmark; the selected-image full run
-shows that other failures remain nonzero as intended.
+`sqlite3` and exclude only that named benchmark; other failures still produce
+a nonzero exit status.
 Cloud Build estimates use the standard `E2_STANDARD_2` rate
 of USD 0.006 per build minute and include generous setup/runtime margin over the
 measured local command timings. They exclude PR event volume, package download
@@ -109,7 +136,7 @@ egress, log storage/retention, and any free-tier or temporary credits.
 | Config | Measured local duration | Conservative Cloud Build duration | Estimate per run |
 | --- | ---: | ---: | ---: |
 | Fast PR (`cloudbuild.yaml`) | 2m50s earlier baseline; 4,010 passed, 4 failed before final exclusions | 8 min | USD 0.048 |
-| Full offline (`cloudbuild.full.yaml`) | 346s setup + full sequence + focused publication rerun; full sequence failed as detailed above | 15 min | USD 0.090 |
+| Full offline (`cloudbuild.full.yaml`) | 316.815s resumed setup + passing full sequence; historical 346s failed run detailed above | 15 min | USD 0.090 |
 
 The fast baseline's hardware failure was not hidden:
 `tests/unit/test_v2_concurrency.py::TestLargeSession::test_10k_messages_chain_and_v2_under_thresholds`
